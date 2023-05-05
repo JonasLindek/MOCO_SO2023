@@ -34,6 +34,8 @@ import com.datojo.socialpet.ui.theme.SocialPetTheme
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.runtime.*
@@ -158,6 +160,11 @@ fun MyAnimation() {
         R.drawable.cat_1_laydown__1_
     )
 
+    val transitionalAnimations = listOf(
+        AnimationState.LAYDOWN,
+        AnimationState.STANDUP
+    )
+
     var frameIds by remember { mutableStateOf(idleFrameIds) }
 
     // Define the current frame index
@@ -205,22 +212,27 @@ fun MyAnimation() {
     }
 
     // Draw the current frame of the animation
+    var interactionSource = remember { MutableInteractionSource() }
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(16.dp)
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null
+            ) {
+                if (transitionalAnimations.contains(animationState)) {
+                    return@clickable // Don't change the animation when it's in a transitional state
+                }
+                if (animationState == AnimationState.IDLE) {
+                    animationState = AnimationState.LAYDOWN
+                } else {
+                    animationState = AnimationState.STANDUP
+                }
+                animationChange = true },
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        Button(onClick = {
-            if (animationState == AnimationState.IDLE) {
-                animationState = AnimationState.LAYDOWN
-            } else {
-                animationState = AnimationState.STANDUP
-            }
-            animationChange = true }) {
-            Text("${animationState.name}")
-        }
         PixelArtImage(resId = frameIds[frameIndex], scale = 15f)
     }
 
