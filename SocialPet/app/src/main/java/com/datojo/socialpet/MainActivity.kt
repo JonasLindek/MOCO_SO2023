@@ -3,6 +3,7 @@ package com.datojo.socialpet
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.service.autofill.OnClickAction
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.DrawableRes
@@ -31,36 +32,69 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.datojo.socialpet.ui.theme.SocialPetTheme
-import androidx.compose.animation.core.*
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.runtime.*
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.FilterQuality
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import kotlinx.coroutines.delay
 
 
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.composable
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            SocialPetTheme {
-                MenuOverlay()
-                MyAnimation()
-            }
+            Navigation()
         }
+    }
+}
+
+sealed class Screen(val route: String) {
+    object HomeScreen : Screen("home_screen")
+    object FriendScreen : Screen("friend_screen")
+    object SettingsScreen : Screen("settings_screen")
+    object ArcadeScreen : Screen("arcade_screen")
+    object MallScreen : Screen("mall_screen")
+
+    fun withArguments(vararg args: String) : String {
+        return buildString {
+            append(route)
+            args.forEach { arg -> append("/$arg") }
+        }
+    }
+}
+
+@Composable
+fun Navigation() {
+    val navController = rememberNavController()
+    NavHost(navController = navController, startDestination = Screen.HomeScreen.route) {
+        composable(route = Screen.HomeScreen.route) {
+            HomeScreen(navController = navController)
+        }
+        composable(route = Screen.FriendScreen.route) {
+            FriendListScreen(navController = navController)
+        }
+    }
+}
+
+@Composable
+fun HomeScreen(navController : NavController) {
+    SocialPetTheme {
+        MenuOverlay { navController.navigate(Screen.FriendScreen.route) }
+        MyAnimation()
+    }
+}
+
+@Composable
+fun FriendListScreen(navController: NavController) {
+    SocialPetTheme {
+        ListOverlay { navController.navigate(Screen.HomeScreen.route) }
     }
 }
 
@@ -81,7 +115,7 @@ fun GreetingPreview() {
 }
 
 @Composable
-fun MenuOverlay() {
+fun MenuOverlay(onClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -94,16 +128,22 @@ fun MenuOverlay() {
         StatusBar(Color.Green, 0.75f)
         StatusBar(Color(.2f,.4f,1f), 1f)
         Row() {
-            FloatingActionButton(
-                onClick = { /*TODO*/ },
-                shape = CircleShape,
-                containerColor = Color.White,
-                modifier = Modifier
-                    .width(75.dp)
-                    .height(75.dp)
-            ) {
+            MenuButton(onClick)
+        }
+    }
+}
 
-            }
+@Composable
+fun ListOverlay(onClick: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.Start,
+        verticalArrangement = Arrangement.Bottom
+    ) {
+        Row() {
+            MenuButton(onClick)
         }
     }
 }
@@ -260,5 +300,21 @@ fun StatusBar(color: Color, state: Float) {
                 .border(2.dp, Color.Black, MaterialTheme.shapes.small)
                 .clip(MaterialTheme.shapes.small)
         )
+    }
+}
+
+@Composable
+fun MenuButton(onClick: () -> Unit) {
+    Row (){
+        FloatingActionButton(
+            onClick = onClick ,
+            shape = CircleShape,
+            containerColor = Color.White,
+            modifier = Modifier
+                .width(75.dp)
+                .height(75.dp)
+        ) {
+
+        }
     }
 }
