@@ -9,6 +9,8 @@ import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,13 +20,13 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -34,10 +36,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.layout.VerticalAlignmentLine
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -92,15 +94,26 @@ fun Navigation() {
 @Composable
 fun HomeScreen(navController : NavController) {
     SocialPetTheme {
+        Background()
+        CatAnimation()
         MenuOverlay { navController.navigate(Screen.FriendScreen.route) }
-        MyAnimation()
     }
+}
+
+@Composable
+fun Background() {
+    Image(
+        painter = painterResource(id = R.drawable.bedroom),
+        contentDescription = "Bedroom",
+        modifier = Modifier
+            .scale(3.8f)
+            .padding(0.dp, 275.dp)
+    )
 }
 
 @Composable
 fun FriendListScreen(navController: NavController) {
     val contacts = listOf("Daniel Sonnenberg", "Tom Küper", "Jonas Lindek")
-
     SocialPetTheme {
         ListOverlay(contacts, { navController.navigate(Screen.HomeScreen.route) }, { 1 + 1})
     }
@@ -135,7 +148,7 @@ fun MenuOverlay(onClick: () -> Unit) {
         StatusBar(Color.Red, 0.5f)
         StatusBar(Color.Green, 0.75f)
         StatusBar(Color(.2f,.4f,1f), 1f)
-        Row() {
+        Row {
             MenuButton(onClick)
         }
     }
@@ -172,7 +185,7 @@ enum class AnimationState {
 }
 
 @Composable
-fun MyAnimation() {
+fun CatAnimation() {
     // Load the animation frames as drawables
     val idleFrameIds = listOf(
         R.drawable.cat_1_idle___1_,
@@ -212,6 +225,11 @@ fun MyAnimation() {
         R.drawable.cat_1_laydown__3_,
         R.drawable.cat_1_laydown__2_,
         R.drawable.cat_1_laydown__1_
+    )
+
+    val transitionalAnimations = listOf(
+        AnimationState.LAYDOWN,
+        AnimationState.STANDUP
     )
 
     var frameIds by remember { mutableStateOf(idleFrameIds) }
@@ -261,22 +279,27 @@ fun MyAnimation() {
     }
 
     // Draw the current frame of the animation
+    val interactionSource = remember { MutableInteractionSource() }
     Column(
         modifier = Modifier
+            .padding(16.dp)
             .fillMaxSize()
-            .padding(16.dp),
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null
+            ) {
+                if (transitionalAnimations.contains(animationState)) {
+                    return@clickable // Don't change the animation when it's in a transitional state
+                }
+                if (animationState == AnimationState.IDLE) {
+                    animationState = AnimationState.LAYDOWN
+                } else {
+                    animationState = AnimationState.STANDUP
+                }
+                animationChange = true },
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        Button(onClick = {
-            if (animationState == AnimationState.IDLE) {
-                animationState = AnimationState.LAYDOWN
-            } else {
-                animationState = AnimationState.STANDUP
-            }
-            animationChange = true }) {
-            Text("${animationState.name}")
-        }
         PixelArtImage(resId = frameIds[frameIndex], scale = 15f)
     }
 
@@ -289,6 +312,7 @@ fun PixelArtImage(@DrawableRes resId: Int, scale: Float) {
     Image(
         bitmap = scaledBitmap.asImageBitmap(),
         contentDescription = null,
+        modifier = Modifier.offset(20.dp, 230.dp)
     )
 }
 
