@@ -7,48 +7,49 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.absoluteOffset
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.VerticalAlignmentLine
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import com.datojo.socialpet.ui.theme.SocialPetTheme
-import androidx.compose.animation.core.*
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.offset
-import androidx.compose.runtime.*
-import androidx.compose.ui.draw.scale
-import kotlinx.coroutines.delay
-
-
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.platform.LocalContext
-
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.datojo.socialpet.ui.theme.SocialPetTheme
+import kotlinx.coroutines.delay
 
 
 class MainActivity : ComponentActivity() {
@@ -91,27 +92,17 @@ fun Navigation() {
 @Composable
 fun HomeScreen(navController : NavController) {
     SocialPetTheme {
-        Background()
-        CatAnimation()
         MenuOverlay { navController.navigate(Screen.FriendScreen.route) }
+        MyAnimation()
     }
 }
 
 @Composable
-fun Background() {
-    Image(
-        painter = painterResource(id = R.drawable.bedroom),
-        contentDescription = "Bedroom",
-        modifier = Modifier
-            .scale(3.8f)
-            .padding(0.dp, 275.dp)
-    )
-}
-
-@Composable
 fun FriendListScreen(navController: NavController) {
+    val contacts = listOf("Daniel Sonnenberg", "Tom Küper", "Jonas Lindek")
+
     SocialPetTheme {
-        ListOverlay { navController.navigate(Screen.HomeScreen.route) }
+        ListOverlay(contacts, { navController.navigate(Screen.HomeScreen.route) }, { 1 + 1})
     }
 }
 
@@ -151,17 +142,25 @@ fun MenuOverlay(onClick: () -> Unit) {
 }
 
 @Composable
-fun ListOverlay(onClick: () -> Unit) {
+fun ListOverlay(contacts: List<String>, onClick: () -> Unit, addContact: () -> Unit) {
+    ContactBar(onClick)
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 8.dp, vertical = 30.dp),
+        horizontalAlignment = Alignment.End,
+        verticalArrangement = Arrangement.Top
+    ) {
+        ContactList(contacts)
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        horizontalAlignment = Alignment.Start,
+        horizontalAlignment = Alignment.End,
         verticalArrangement = Arrangement.Bottom
     ) {
-        Row() {
-            MenuButton(onClick)
-        }
+        AddButton(addContact)
     }
 }
 
@@ -173,7 +172,7 @@ enum class AnimationState {
 }
 
 @Composable
-fun CatAnimation() {
+fun MyAnimation() {
     // Load the animation frames as drawables
     val idleFrameIds = listOf(
         R.drawable.cat_1_idle___1_,
@@ -213,11 +212,6 @@ fun CatAnimation() {
         R.drawable.cat_1_laydown__3_,
         R.drawable.cat_1_laydown__2_,
         R.drawable.cat_1_laydown__1_
-    )
-
-    val transitionalAnimations = listOf(
-        AnimationState.LAYDOWN,
-        AnimationState.STANDUP
     )
 
     var frameIds by remember { mutableStateOf(idleFrameIds) }
@@ -267,27 +261,22 @@ fun CatAnimation() {
     }
 
     // Draw the current frame of the animation
-    var interactionSource = remember { MutableInteractionSource() }
     Column(
         modifier = Modifier
-            .padding(16.dp)
             .fillMaxSize()
-            .clickable(
-                interactionSource = interactionSource,
-                indication = null
-            ) {
-                if (transitionalAnimations.contains(animationState)) {
-                    return@clickable // Don't change the animation when it's in a transitional state
-                }
-                if (animationState == AnimationState.IDLE) {
-                    animationState = AnimationState.LAYDOWN
-                } else {
-                    animationState = AnimationState.STANDUP
-                }
-                animationChange = true },
+            .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
+        Button(onClick = {
+            if (animationState == AnimationState.IDLE) {
+                animationState = AnimationState.LAYDOWN
+            } else {
+                animationState = AnimationState.STANDUP
+            }
+            animationChange = true }) {
+            Text("${animationState.name}")
+        }
         PixelArtImage(resId = frameIds[frameIndex], scale = 15f)
     }
 
@@ -300,7 +289,6 @@ fun PixelArtImage(@DrawableRes resId: Int, scale: Float) {
     Image(
         bitmap = scaledBitmap.asImageBitmap(),
         contentDescription = null,
-        modifier = Modifier.offset(20.dp, 230.dp)
     )
 }
 
@@ -341,6 +329,117 @@ fun MenuButton(onClick: () -> Unit) {
             modifier = Modifier
                 .width(75.dp)
                 .height(75.dp)
+        ) {
+
+        }
+    }
+}
+
+@Composable
+fun Contact(name: String) {
+    val hex = java.lang.String.format("#%06x", 0xFFFFFF and name.hashCode())
+
+    Row(
+        modifier = Modifier
+            .drawBehind {
+                val borderSize = 2.dp.toPx()
+                drawLine(
+                    color = Color.LightGray,
+                    start = Offset(0f, size.height),
+                    end = Offset(size.width, size.height),
+                    strokeWidth = borderSize
+                )
+            }
+            .padding(12.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(50.dp)
+                .clip(CircleShape)
+                .background(Color(android.graphics.Color.parseColor(hex)))
+        )
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(12.dp)
+        ) {
+            Text(text = name)
+        }
+    }
+
+}
+@Composable
+fun ContactList(contacts: List<String>) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(8.dp)
+    ) {
+        items(contacts) { contacts->
+            Contact(contacts)
+        }
+    }
+}
+
+@Composable
+fun ContactBar(onClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .height(40.dp)
+            .fillMaxWidth()
+            .background(Color.LightGray),
+        contentAlignment = Alignment.Center
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp),
+            horizontalArrangement = Arrangement.Start
+        ) {
+            BackButton(onClick)
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxHeight(),
+            verticalAlignment = Alignment.CenterVertically
+        ){
+
+
+            Text(
+                text = "Contacts",
+                textAlign = TextAlign.Center,
+            )
+        }
+    }
+}
+
+@Composable
+fun BackButton(onClick: () -> Unit) {
+    Row (){
+        FloatingActionButton(
+            onClick = onClick ,
+            shape = CircleShape,
+            containerColor = Color.White,
+            modifier = Modifier
+                .width(20.dp)
+                .height(20.dp)
+        ) {
+
+        }
+    }
+}
+
+@Composable
+fun AddButton(onClick: () -> Unit) {
+    Row () {
+        FloatingActionButton(
+            onClick = onClick,
+            shape = CircleShape,
+            containerColor = Color.White,
+            modifier = Modifier
+                .width(50.dp)
+                .height(50.dp)
         ) {
 
         }
