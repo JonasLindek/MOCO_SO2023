@@ -568,7 +568,7 @@ fun AboutPopUp(onDismiss: (Boolean) -> Unit, onBack: (Boolean) -> Unit) {
             )
 
             Text(
-                text = "Lorem Ipsum \n" + "Lorem Ipsum \n" + "Lorem Ipsum",
+                text = "Tobias Peltzer \n" + "Technical Support \n" + "Lorem Ipsum",
                 color = Color.White,
                 textAlign = TextAlign.Left
             )

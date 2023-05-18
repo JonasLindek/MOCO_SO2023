@@ -21,55 +21,65 @@ class StatsViewModel: ViewModel() {
         val magnitude = 25f
         val buffer = 0
 
-        val currDate = Date()
-        val timeDiff = currDate.time - lastOnline.time
-        var secondsTimeDiff = TimeUnit.MILLISECONDS.toSeconds(timeDiff)
+        if(_health.value <= 0f) {
+            _health.value = 0f
+            _hunger.value = 0f
+            _social.value = 0f
+        }
+        else {
+            val currDate = Date()
+            val timeDiff = currDate.time - lastOnline.time
+            var secondsTimeDiff = TimeUnit.MILLISECONDS.toSeconds(timeDiff)
 
-        if(secondsTimeDiff >= secondsInterval) {
-            if(secondsTimeDiff > buffer)
-                secondsTimeDiff -= buffer
+            if (secondsTimeDiff >= secondsInterval) {
+                if (secondsTimeDiff > buffer)
+                    secondsTimeDiff -= buffer
 
-
-            _social.value -= (secondsTimeDiff / secondsInterval) / magnitude
-            if(_social.value < 0f) _social.value = 0f
-
-
-            if(_social.value == 0f)
-                _hunger.value -= (secondsTimeDiff / secondsInterval) / magnitude / 2
-            else
-                _hunger.value -= (secondsTimeDiff / secondsInterval) / magnitude
-            if(_hunger.value < 0f) _hunger.value = 0f
+                _social.value -= (secondsTimeDiff / secondsInterval) / magnitude
+                if (_social.value < 0f) _social.value = 0f
 
 
-            if(_hunger.value == 0f)
-                _health.value -= (secondsTimeDiff / secondsInterval) / magnitude
-            if(_health.value < 1f && _health.value > 0f)
-                _health.value += (secondsTimeDiff / secondsInterval) / magnitude / 2
-            if(_health.value < 0f) _health.value = 0f
-            if(_health.value > 1f) _health.value = 1f
+                if (_social.value == 0f)
+                    _hunger.value -= (secondsTimeDiff / secondsInterval) / magnitude / 2
+                else
+                    _hunger.value -= (secondsTimeDiff / secondsInterval) / magnitude
+                if (_hunger.value < 0f) _hunger.value = 0f
 
 
-            lastOnline = currDate
+                if (_hunger.value == 0f)
+                    _health.value -= (secondsTimeDiff / secondsInterval) / magnitude
+                else if (_health.value < 1f && _health.value > 0f)
+                    _health.value += (secondsTimeDiff / secondsInterval) / magnitude / 2
+                if (_health.value > 1f) _health.value = 1f
+
+                lastOnline = currDate
+            }
         }
     }
 
     fun feed(): Int {
-        if(_hunger.value == 1f)
-            return 1
+        if(_health.value > 0f) {
+            if (_hunger.value == 1f)
+                return 1
 
-        _hunger.value += 0.25f
-        if(_hunger.value > 1f)
-            _hunger.value = 1f
-        return 0
+            _hunger.value += 0.25f
+            if (_hunger.value > 1f)
+                _hunger.value = 1f
+            return 0
+        }
+        return -1
     }
 
     fun pet(): Int {
-        if(_social.value == 1f)
-            return 1
+        if (_health.value > 0f) {
+            if (_social.value == 1f)
+                return 1
 
-        _social.value += 0.125f
-        if(_social.value > 1f)
-            _social.value = 1f
-        return 0
+            _social.value += 0.125f
+            if (_social.value > 1f)
+                _social.value = 1f
+            return 0
+        }
+        return -1
     }
 }
