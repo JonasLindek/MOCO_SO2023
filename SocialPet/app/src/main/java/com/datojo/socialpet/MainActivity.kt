@@ -25,6 +25,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -107,13 +108,14 @@ fun HomeScreen(navController : NavController) {
                 .padding(0.dp, 275.dp)
         )
         CatAnimation()
-        MenuOverlay({ navController.navigate(Screen.FriendListScreen.route) },
+        MenuOverlay(
             listOf(
-
+                { navController.navigate(Screen.FriendListScreen.route) },
                 { navController.navigate(Screen.ArcadeScreen.route) },
                 { navController.navigate(Screen.MallScreen.route) }
             ),
             listOf(
+                "Friends",
                 "Arcade",
                 "Mall"
             )
@@ -134,16 +136,18 @@ fun ArcadeScreen(navController: NavController) {
     SocialPetTheme {
         Background(R.drawable.arcade, "Arcade",
             Modifier
-                .scale(3.8f)
+                .scale(3.5f)
                 .fillMaxSize()
                 .padding(0.dp, 275.dp)
         )
-        MenuOverlay({ navController.navigate(Screen.FriendListScreen.route) },
+        MenuOverlay(
             listOf(
+                { navController.navigate(Screen.FriendListScreen.route) },
                 { navController.navigate(Screen.HomeScreen.route) },
                 { navController.navigate(Screen.MallScreen.route) }
             ),
             listOf(
+                "Friends",
                 "Home",
                 "Mall"
             )
@@ -156,16 +160,18 @@ fun MallScreen(navController: NavController) {
     SocialPetTheme {
         Background(R.drawable.mall, "Mall",
             Modifier
-                .scale(3.8f)
+                .scale(3.5f)
                 .fillMaxSize()
                 .padding(0.dp, 275.dp)
         )
-        MenuOverlay({ navController.navigate(Screen.FriendListScreen.route) },
+        MenuOverlay(
             listOf(
+                { navController.navigate(Screen.FriendListScreen.route) },
                 { navController.navigate(Screen.HomeScreen.route) },
                 { navController.navigate(Screen.ArcadeScreen.route) }
             ),
             listOf(
+                "Friends",
                 "Home",
                 "Arcade"
             )
@@ -185,14 +191,28 @@ fun Background(id: Int, description: String, modifier: Modifier) {
 
 //Overlays to add to the Screens
 @Composable
-fun MenuOverlay(friendRoute: () -> Unit, screenRoutes: List<() -> Unit>, screenNames: List<String>) {
+fun MenuOverlay(screenRoutes: List<() -> Unit>, screenNames: List<String>) {
     var menuPopUpControl by remember { mutableStateOf(false) }
+    var settingsPopUpControl by remember { mutableStateOf(false) }
     var notificationPopUpControl by remember { mutableStateOf(false) }
     var audioPopUpControl by remember { mutableStateOf(false) }
     var aboutPopUpControl by remember { mutableStateOf(false) }
 
     if(menuPopUpControl)
-        MenuPopUp({ change -> menuPopUpControl = change }, friendRoute, screenRoutes, screenNames)
+        MenuPopUp({ change -> menuPopUpControl = change }, { change -> settingsPopUpControl = change }, screenRoutes, screenNames)
+    if(settingsPopUpControl)
+        SettingsPopUp({ change -> settingsPopUpControl = change }, { change -> menuPopUpControl = change },
+        listOf(
+            { change -> notificationPopUpControl = change },
+            { change -> audioPopUpControl = change },
+            { change -> aboutPopUpControl = change }
+        ))
+    if(notificationPopUpControl)
+        NotificationPopUp({ change -> notificationPopUpControl = change }, { change -> settingsPopUpControl = change })
+    if(audioPopUpControl)
+        AudioPopUp({ change -> audioPopUpControl = change }, { change -> settingsPopUpControl = change })
+    if(aboutPopUpControl)
+        AboutPopUp({ change -> aboutPopUpControl = change }, { change -> settingsPopUpControl = change })
 
     Column(
         modifier = Modifier
@@ -264,61 +284,280 @@ fun StatusBar(color: Color, state: Float) {
 }
 
 @Composable
-fun MenuPopUp(onDismiss: (Boolean) -> Unit, friendRoute: () -> Unit, screenRoutes: List<() -> Unit>, screenNames: List<String>){
-    Column(
-        modifier = Modifier
-            .background(Color.LightGray.copy(alpha = .5f))
+fun MenuPopUp(onDismiss: (Boolean) -> Unit, onSettings: (Boolean) -> Unit, screenRoutes: List<() -> Unit>, screenNames: List<String>){
+    Popup(
+        alignment = Alignment.Center,
+        onDismissRequest = { onDismiss(false) },
+        properties = PopupProperties(
+            focusable = true,
+        )
     ) {
-        Popup(
-            onDismissRequest = { onDismiss(false) },
-            properties = PopupProperties(
-                focusable = true,
-                dismissOnClickOutside = true,
-
-            )
+        Column(
+            modifier = Modifier
+                .size(250.dp, 320.dp)
+                .clip(RoundedCornerShape(10.dp))
+                .background(Color.LightGray.copy(alpha = .6f)),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(100.dp, 170.dp)
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(Color.LightGray.copy(alpha = .5f)),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Top
+            Spacer(Modifier.padding(4.dp))
 
-            ) {
-                Spacer(Modifier.padding(6.dp))
-                Text(
-                    text = "Go Somewhere",
-                    color = Color.White,
-                    textAlign = TextAlign.Center
-                )
+            Text(
+                text = "Go Somewhere",
+                color = Color.White,
+                textAlign = TextAlign.Center
+            )
 
-                PopUpButton(onClick = friendRoute, name = "Friends")
+            val modifier = Modifier
+                .fillMaxWidth()
+                .height(70.dp)
+                .padding(12.dp, 6.dp)
 
-                PopUpButton(onClick = screenRoutes[0], name = screenNames[0])
+            PopUpButton(modifier,
+                onClick = {
+                    screenRoutes[1]()
+                    onDismiss(false) }, name = screenNames[1])
 
-                PopUpButton(onClick = screenRoutes[1], name = screenNames[1])
+            PopUpButton(modifier,
+                onClick = {
+                    screenRoutes[2]()
+                    onDismiss(false) }, name = screenNames[2])
 
-                PopUpButton(onClick = { /*TODO*/ }, name = "Settings")
-            }
+            PopUpButton(modifier,
+                onClick = {
+                    screenRoutes[0]()
+                    onDismiss(false) }, name = screenNames[0])
+
+            PopUpButton(modifier,
+                onClick = {
+                    onSettings(true)
+                    onDismiss(false) }, name = "Settings")
+
+            Spacer(Modifier.padding(4.dp))
         }
     }
 }
 
 @Composable
-fun SettingsPopUp() {
+fun SettingsPopUp(onDismiss: (Boolean) -> Unit, onBack: (Boolean) -> Unit, onCategory: List<(Boolean) -> Unit>) {
+    Popup(
+        alignment = Alignment.Center,
+        onDismissRequest = { onDismiss(false) },
+        properties = PopupProperties(
+            focusable = true,
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .size(250.dp, 300.dp)
+                .clip(RoundedCornerShape(10.dp))
+                .background(Color.LightGray.copy(alpha = .6f)),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Spacer(Modifier.padding(4.dp))
 
+            Text(
+                text = "Go Somewhere",
+                color = Color.White,
+                textAlign = TextAlign.Center
+            )
+
+            val modifier = Modifier
+                .fillMaxWidth()
+                .height(70.dp)
+                .padding(12.dp, 6.dp)
+
+            PopUpButton(modifier,
+                onClick = {
+                    onCategory[0](true)
+                    onDismiss(false) }, "Notifications")
+
+            PopUpButton(modifier,
+                onClick = {
+                    onCategory[1](true)
+                    onDismiss(false) }, "Audio")
+
+            PopUpButton(modifier,
+                onClick = {
+                    onCategory[2](true)
+                    onDismiss(false) }, "About")
+
+            PopUpButton(
+                Modifier
+                    .width(110.dp)
+                    .height(50.dp)
+                    .padding(12.dp, 6.dp),
+                onClick = {
+                    onBack(true)
+                    onDismiss(false) }, "Back")
+
+            Spacer(Modifier.padding(4.dp))
+        }
+    }
 }
 
 @Composable
-fun NotificationPopUp() {
+fun NotificationPopUp(onDismiss: (Boolean) -> Unit, onBack: (Boolean) -> Unit) {
+    Popup(
+        alignment = Alignment.Center,
+        onDismissRequest = { onDismiss(false) },
+        properties = PopupProperties(
+            focusable = true,
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .size(150.dp, 150.dp)
+                .clip(RoundedCornerShape(10.dp))
+                .background(Color.LightGray.copy(alpha = .6f)),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Spacer(Modifier.padding(4.dp))
 
+            Text(
+                text = "Notifications",
+                color = Color.White,
+                textAlign = TextAlign.Center
+            )
+
+            //TODO: save value
+            val checkedState = remember { mutableStateOf(true) }
+            Checkbox(
+                checked = checkedState.value,
+                onCheckedChange = { checkedState.value = it }
+            )
+
+            PopUpButton(
+                Modifier
+                    .width(110.dp)
+                    .height(50.dp)
+                    .padding(12.dp, 6.dp),
+                onClick = {
+                    onBack(true)
+                    onDismiss(false) }, "Back")
+
+            Spacer(Modifier.padding(4.dp))
+        }
+    }
 }
 
 @Composable
-fun AboutPopUp() {
+fun AudioPopUp(onDismiss: (Boolean) -> Unit, onBack: (Boolean) -> Unit) {
+    Popup(
+        alignment = Alignment.Center,
+        onDismissRequest = { onDismiss(false) },
+        properties = PopupProperties(
+            focusable = true,
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .size(150.dp, 210.dp)
+                .clip(RoundedCornerShape(10.dp))
+                .background(Color.LightGray.copy(alpha = .6f)),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Spacer(Modifier.padding(4.dp))
 
+            Text(
+                text = "Audio",
+                color = Color.White,
+                textAlign = TextAlign.Center
+            )
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+            ) {
+                Text(
+                    text = "Sound",
+                    color = Color.White,
+                    textAlign = TextAlign.Start
+                )
+
+                //TODO: save value
+                val checkedState = remember { mutableStateOf(true) }
+                Checkbox(
+                    checked = checkedState.value,
+                    onCheckedChange = { checkedState.value = it }
+                )
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+            ) {
+                Text(
+                    text = "Music",
+                    color = Color.White,
+                    textAlign = TextAlign.Start
+                )
+
+                //TODO: save value
+                val checkedState = remember { mutableStateOf(true) }
+                Checkbox(
+                    checked = checkedState.value,
+                    onCheckedChange = { checkedState.value = it }
+                )
+            }
+
+            PopUpButton(
+                Modifier
+                    .width(110.dp)
+                    .height(50.dp)
+                    .padding(12.dp, 6.dp),
+                onClick = {
+                    onBack(true)
+                    onDismiss(false) }, "Back")
+
+            Spacer(Modifier.padding(4.dp))
+        }
+    }
+}
+
+@Composable
+fun AboutPopUp(onDismiss: (Boolean) -> Unit, onBack: (Boolean) -> Unit) {
+    Popup(
+        alignment = Alignment.Center,
+        onDismissRequest = { onDismiss(false) },
+        properties = PopupProperties(
+            focusable = true,
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .size(150.dp, 150.dp)
+                .clip(RoundedCornerShape(10.dp))
+                .background(Color.LightGray.copy(alpha = .6f)),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Spacer(Modifier.padding(4.dp))
+
+            Text(
+                text = "About",
+                color = Color.White,
+                textAlign = TextAlign.Center
+            )
+
+            Text(
+                text = "Lorem Ipsum \n" + "Lorem Ipsum \n" + "Lorem Ipsum",
+                color = Color.White,
+                textAlign = TextAlign.Left
+            )
+
+            PopUpButton(
+                Modifier
+                    .width(110.dp)
+                    .height(50.dp)
+                    .padding(12.dp, 6.dp),
+                onClick = {
+                    onBack(true)
+                    onDismiss(false) }, "Back")
+
+            Spacer(Modifier.padding(4.dp))
+        }
+    }
 }
 
 @Composable
@@ -450,15 +689,12 @@ fun AddButton(onClick: () -> Unit) {
 }
 
 @Composable
-fun PopUpButton(onClick: () -> Unit, name: String) {
+fun PopUpButton(modifier: Modifier = Modifier, onClick: () -> Unit, name: String) {
     Row() {
         Button(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(70.dp)
-                .padding(12.dp, 6.dp),
+            modifier = modifier,
             onClick = onClick,
-            colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray.copy(alpha = .7f)),
+            colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray.copy(alpha = .8f)),
             shape = RoundedCornerShape(5.dp)
         ) {
             Text(
