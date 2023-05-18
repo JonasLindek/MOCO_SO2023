@@ -3,6 +3,7 @@ package com.datojo.socialpet
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -49,13 +50,18 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.datojo.socialpet.ui.theme.SocialPetTheme
+import kotlinx.coroutines.delay
+
 
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val stats: StatsViewModel by viewModels()
         setContent {
-            Navigation()
+            stats.calcStats()
+            Navigation(stats)
         }
     }
 }
@@ -77,22 +83,30 @@ sealed class Screen(val route: String) {
 }
 
 
-//Navigation by Navcontroller
+//Navigation by NavController
 @Composable
-fun Navigation() {
+fun Navigation(stats: StatsViewModel) {
     val navController = rememberNavController()
+
+    LaunchedEffect(Unit) {
+        while(true) {
+            stats.calcStats()
+            delay(1000)
+        }
+    }
+
     NavHost(navController = navController, startDestination = Screen.HomeScreen.route) {
         composable(route = Screen.HomeScreen.route) {
-            HomeScreen(navController = navController)
+            HomeScreen(navController = navController, stats)
         }
         composable(route = Screen.FriendListScreen.route) {
             FriendListScreen(navController = navController)
         }
         composable(route = Screen.ArcadeScreen.route) {
-            ArcadeScreen(navController = navController)
+            ArcadeScreen(navController = navController, stats)
         }
         composable(route = Screen.MallScreen.route) {
-            MallScreen(navController = navController)
+            MallScreen(navController = navController, stats)
         }
     }
 }
@@ -100,7 +114,7 @@ fun Navigation() {
 
 //Composables listing all needed parts for the different Screens
 @Composable
-fun HomeScreen(navController : NavController) {
+fun HomeScreen(navController : NavController, stats: StatsViewModel) {
     SocialPetTheme {
         Background(R.drawable.bedroom, "Bedroom",
             Modifier
@@ -118,8 +132,19 @@ fun HomeScreen(navController : NavController) {
                 "Friends",
                 "Arcade",
                 "Mall"
-            )
+            ),
+            stats
         )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.End,
+            verticalArrangement = Arrangement.Bottom
+        ) {
+            CatInteraction {stats.feed()}
+            CatInteraction {stats.pet()}
+        }
     }
 }
 
@@ -132,7 +157,7 @@ fun FriendListScreen(navController: NavController) {
 }
 
 @Composable
-fun ArcadeScreen(navController: NavController) {
+fun ArcadeScreen(navController: NavController, stats: StatsViewModel) {
     SocialPetTheme {
         Background(R.drawable.arcade, "Arcade",
             Modifier
@@ -150,13 +175,14 @@ fun ArcadeScreen(navController: NavController) {
                 "Friends",
                 "Home",
                 "Mall"
-            )
+            ),
+            stats
         )
     }
 }
 
 @Composable
-fun MallScreen(navController: NavController) {
+fun MallScreen(navController: NavController, stats: StatsViewModel) {
     SocialPetTheme {
         Background(R.drawable.mall, "Mall",
             Modifier
@@ -174,7 +200,8 @@ fun MallScreen(navController: NavController) {
                 "Friends",
                 "Home",
                 "Arcade"
-            )
+            ),
+            stats
         )
     }
 }
@@ -191,7 +218,7 @@ fun Background(id: Int, description: String, modifier: Modifier) {
 
 //Overlays to add to the Screens
 @Composable
-fun MenuOverlay(screenRoutes: List<() -> Unit>, screenNames: List<String>) {
+fun MenuOverlay(screenRoutes: List<() -> Unit>, screenNames: List<String>, stats: StatsViewModel) {
     var menuPopUpControl by remember { mutableStateOf(false) }
     var settingsPopUpControl by remember { mutableStateOf(false) }
     var notificationPopUpControl by remember { mutableStateOf(false) }
@@ -222,9 +249,9 @@ fun MenuOverlay(screenRoutes: List<() -> Unit>, screenNames: List<String>) {
         verticalArrangement = Arrangement.Bottom
     ) {
         // TODO: Healthbars
-        StatusBar(Color.Red, 0.5f)
-        StatusBar(Color.Green, 0.75f)
-        StatusBar(Color(.2f,.4f,1f), 1f)
+        StatusBar(Color.Red, stats.health.value)
+        StatusBar(Color.Green, stats.hunger.value)
+        StatusBar(Color(.2f,.4f,1f), stats.social.value)
         Row {
             MenuButton { change -> menuPopUpControl = change }
         }
@@ -356,7 +383,7 @@ fun SettingsPopUp(onDismiss: (Boolean) -> Unit, onBack: (Boolean) -> Unit, onCat
             Spacer(Modifier.padding(4.dp))
 
             Text(
-                text = "Go Somewhere",
+                text = "Settings",
                 color = Color.White,
                 textAlign = TextAlign.Center
             )
@@ -701,6 +728,22 @@ fun PopUpButton(modifier: Modifier = Modifier, onClick: () -> Unit, name: String
                 text = name,
                 color = Color.White
             )
+        }
+    }
+}
+
+@Composable
+fun CatInteraction(onClick: () -> Unit) {
+    Row(){
+        FloatingActionButton(
+            onClick = { onClick() } ,
+            shape = CircleShape,
+            containerColor = Color.White,
+            modifier = Modifier
+                .width(75.dp)
+                .height(75.dp)
+        ) {
+
         }
     }
 }
