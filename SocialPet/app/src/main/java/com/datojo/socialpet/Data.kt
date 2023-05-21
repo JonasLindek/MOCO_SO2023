@@ -7,14 +7,20 @@ import java.util.Date
 import java.util.concurrent.TimeUnit
 
 class StatsViewModel: ViewModel() {
-    private var _health = mutableStateOf(.5f)
-    private var _hunger = mutableStateOf(.5f)
-    private var _social = mutableStateOf(.5f)
+    private var _health = mutableStateOf(1f)
+    private var _hunger = mutableStateOf(.1f)
+    private var _social = mutableStateOf(.1f)
     private var lastOnline = Date()
 
     val health: State<Float> = _health
     val hunger: State<Float> = _hunger
     val social: State<Float> = _social
+
+    fun setStats(health: Float, hunger: Float, social: Float) {
+        _health.value = health
+        _hunger.value = hunger
+        _social.value = social
+    }
 
     fun calcStats(){
         val secondsInterval = 1f
@@ -32,7 +38,7 @@ class StatsViewModel: ViewModel() {
             var secondsTimeDiff = TimeUnit.MILLISECONDS.toSeconds(timeDiff)
 
             if (secondsTimeDiff >= secondsInterval) {
-                if (secondsTimeDiff > buffer)
+                if (secondsTimeDiff > buffer) //doesnt work for closed app under buffer need to check if app was closed and if under buffer dont change stats
                     secondsTimeDiff -= buffer
 
                 _social.value -= (secondsTimeDiff / secondsInterval) / magnitude

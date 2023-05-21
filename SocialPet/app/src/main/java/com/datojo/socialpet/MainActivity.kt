@@ -60,7 +60,7 @@ class MainActivity : ComponentActivity() {
 
         val stats: StatsViewModel by viewModels()
         setContent {
-            stats.calcStats()
+            stats.setStats(.75f, .5f, .5f)
             Navigation(stats)
         }
     }
@@ -152,7 +152,7 @@ fun HomeScreen(navController : NavController, stats: StatsViewModel) {
 fun FriendListScreen(navController: NavController) {
     val contacts = listOf("Daniel Sonnenberg", "Tom Küper", "Jonas Lindek")
     SocialPetTheme {
-        ListOverlay(contacts, { navController.popBackStack() }, { 1 + 1})
+        ListOverlay(contacts, { navController.popBackStack() }, { 1 + 1 })
     }
 }
 
