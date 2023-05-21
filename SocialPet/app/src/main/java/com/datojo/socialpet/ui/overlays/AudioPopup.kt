@@ -23,7 +23,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
-import com.datojo.socialpet.PopUpButton
 
 @Composable
 fun AudioPopUp(onDismiss: (Boolean) -> Unit, onBack: (Boolean) -> Unit) {

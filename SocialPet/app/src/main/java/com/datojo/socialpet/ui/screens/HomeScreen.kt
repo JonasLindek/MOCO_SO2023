@@ -12,11 +12,11 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.datojo.socialpet.Background
 import com.datojo.socialpet.CatAnimation
-import com.datojo.socialpet.CatInteraction
 import com.datojo.socialpet.ui.overlays.MenuOverlay
 import com.datojo.socialpet.R
 import com.datojo.socialpet.StatsViewModel
 import com.datojo.socialpet.ui.Screen
+import com.datojo.socialpet.ui.overlays.CatInteraction
 import com.datojo.socialpet.ui.theme.SocialPetTheme
 
 @Composable
