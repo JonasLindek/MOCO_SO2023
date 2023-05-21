@@ -1,4 +1,4 @@
-package com.datojo.socialpet.ui.overlays
+package com.datojo.socialpet.View.overlays
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,7 +21,7 @@ import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 
 @Composable
-fun MenuPopUp(onDismiss: (Boolean) -> Unit, onSettings: (Boolean) -> Unit, screenRoutes: List<() -> Unit>, screenNames: List<String>){
+fun SettingsPopUp(onDismiss: (Boolean) -> Unit, onBack: (Boolean) -> Unit, onCategory: List<(Boolean) -> Unit>) {
     Popup(
         alignment = Alignment.Center,
         onDismissRequest = { onDismiss(false) },
@@ -30,7 +31,7 @@ fun MenuPopUp(onDismiss: (Boolean) -> Unit, onSettings: (Boolean) -> Unit, scree
     ) {
         Column(
             modifier = Modifier
-                .size(250.dp, 320.dp)
+                .size(250.dp, 300.dp)
                 .clip(RoundedCornerShape(10.dp))
                 .background(Color.LightGray.copy(alpha = .6f)),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -38,7 +39,7 @@ fun MenuPopUp(onDismiss: (Boolean) -> Unit, onSettings: (Boolean) -> Unit, scree
             Spacer(Modifier.padding(4.dp))
 
             Text(
-                text = "Go Somewhere",
+                text = "Settings",
                 color = Color.White,
                 textAlign = TextAlign.Center
             )
@@ -50,23 +51,27 @@ fun MenuPopUp(onDismiss: (Boolean) -> Unit, onSettings: (Boolean) -> Unit, scree
 
             PopUpButton(modifier,
                 onClick = {
-                    screenRoutes[1]()
-                    onDismiss(false) }, name = screenNames[1])
+                    onCategory[0](true)
+                    onDismiss(false) }, "Notifications")
 
             PopUpButton(modifier,
                 onClick = {
-                    screenRoutes[2]()
-                    onDismiss(false) }, name = screenNames[2])
+                    onCategory[1](true)
+                    onDismiss(false) }, "Audio")
 
             PopUpButton(modifier,
                 onClick = {
-                    screenRoutes[0]()
-                    onDismiss(false) }, name = screenNames[0])
+                    onCategory[2](true)
+                    onDismiss(false) }, "About")
 
-            PopUpButton(modifier,
+            PopUpButton(
+                Modifier
+                    .width(110.dp)
+                    .height(50.dp)
+                    .padding(12.dp, 6.dp),
                 onClick = {
-                    onSettings(true)
-                    onDismiss(false) }, name = "Settings")
+                    onBack(true)
+                    onDismiss(false) }, "Back")
 
             Spacer(Modifier.padding(4.dp))
         }

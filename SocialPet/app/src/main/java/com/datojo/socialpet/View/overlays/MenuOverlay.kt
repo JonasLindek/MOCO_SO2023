@@ -1,4 +1,4 @@
-package com.datojo.socialpet.ui.overlays
+package com.datojo.socialpet.View.overlays
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

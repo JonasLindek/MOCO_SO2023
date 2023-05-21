@@ -1,10 +1,8 @@
-package com.datojo.socialpet.ui.overlays
+package com.datojo.socialpet.View.overlays
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -25,7 +23,7 @@ import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 
 @Composable
-fun AudioPopUp(onDismiss: (Boolean) -> Unit, onBack: (Boolean) -> Unit) {
+fun NotificationPopUp(onDismiss: (Boolean) -> Unit, onBack: (Boolean) -> Unit) {
     Popup(
         alignment = Alignment.Center,
         onDismissRequest = { onDismiss(false) },
@@ -35,7 +33,7 @@ fun AudioPopUp(onDismiss: (Boolean) -> Unit, onBack: (Boolean) -> Unit) {
     ) {
         Column(
             modifier = Modifier
-                .size(150.dp, 210.dp)
+                .size(150.dp, 150.dp)
                 .clip(RoundedCornerShape(10.dp))
                 .background(Color.LightGray.copy(alpha = .6f)),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -43,48 +41,17 @@ fun AudioPopUp(onDismiss: (Boolean) -> Unit, onBack: (Boolean) -> Unit) {
             Spacer(Modifier.padding(4.dp))
 
             Text(
-                text = "Audio",
+                text = "Notifications",
                 color = Color.White,
                 textAlign = TextAlign.Center
             )
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-            ) {
-                Text(
-                    text = "Sound",
-                    color = Color.White,
-                    textAlign = TextAlign.Start
-                )
-
-                //TODO: save value
-                val checkedState = remember { mutableStateOf(true) }
-                Checkbox(
-                    checked = checkedState.value,
-                    onCheckedChange = { checkedState.value = it }
-                )
-            }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-            ) {
-                Text(
-                    text = "Music",
-                    color = Color.White,
-                    textAlign = TextAlign.Start
-                )
-
-                //TODO: save value
-                val checkedState = remember { mutableStateOf(true) }
-                Checkbox(
-                    checked = checkedState.value,
-                    onCheckedChange = { checkedState.value = it }
-                )
-            }
+            //TODO: save value
+            val checkedState = remember { mutableStateOf(true) }
+            Checkbox(
+                checked = checkedState.value,
+                onCheckedChange = { checkedState.value = it }
+            )
 
             PopUpButton(
                 Modifier

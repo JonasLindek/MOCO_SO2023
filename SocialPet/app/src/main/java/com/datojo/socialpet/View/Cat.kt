@@ -1,4 +1,4 @@
-package com.datojo.socialpet
+package com.datojo.socialpet.View
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.datojo.socialpet.R
 import kotlinx.coroutines.delay
 
 enum class AnimationState {

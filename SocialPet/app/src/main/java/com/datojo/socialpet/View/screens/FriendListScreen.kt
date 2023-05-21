@@ -1,9 +1,9 @@
-package com.datojo.socialpet.ui.screens
+package com.datojo.socialpet.View.screens
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
-import com.datojo.socialpet.ui.overlays.ListOverlay
-import com.datojo.socialpet.ui.theme.SocialPetTheme
+import com.datojo.socialpet.View.overlays.ListOverlay
+import com.datojo.socialpet.View.theme.SocialPetTheme
 
 @Composable
 fun FriendListScreen(navController: NavController) {

@@ -30,8 +30,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.datojo.socialpet.ui.Navigation
-import com.datojo.socialpet.ui.overlays.BackButton
+import com.datojo.socialpet.View.Navigation
+import com.datojo.socialpet.View.overlays.BackButton
 
 
 class MainActivity : ComponentActivity() {

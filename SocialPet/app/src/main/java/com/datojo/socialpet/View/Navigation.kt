@@ -1,14 +1,14 @@
-package com.datojo.socialpet.ui
+package com.datojo.socialpet.View
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.datojo.socialpet.ui.screens.ArcadeScreen
-import com.datojo.socialpet.ui.screens.FriendListScreen
-import com.datojo.socialpet.ui.screens.HomeScreen
-import com.datojo.socialpet.ui.screens.MallScreen
+import com.datojo.socialpet.View.screens.ArcadeScreen
+import com.datojo.socialpet.View.screens.FriendListScreen
+import com.datojo.socialpet.View.screens.HomeScreen
+import com.datojo.socialpet.View.screens.MallScreen
 import com.datojo.socialpet.StatsViewModel
 import kotlinx.coroutines.delay
 

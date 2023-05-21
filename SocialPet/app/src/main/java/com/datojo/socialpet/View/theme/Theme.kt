@@ -1,4 +1,4 @@
-package com.datojo.socialpet.ui.theme
+package com.datojo.socialpet.View.theme
 
 import android.app.Activity
 import android.os.Build
