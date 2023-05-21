@@ -47,10 +47,10 @@ fun HomeScreen(navController : NavController, stats: StatsViewModel) {
                 .fillMaxSize()
                 .padding(16.dp),
             horizontalAlignment = Alignment.End,
-            verticalArrangement = Arrangement.Bottom
+            verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.Bottom)
         ) {
-            CatInteraction {stats.feed()}
-            CatInteraction {stats.pet()}
+            CatInteraction({stats.feed()}, R.drawable.foodbowl)
+            CatInteraction({stats.pet()}, R.drawable.waterbowl)
         }
     }
 }

@@ -1,7 +1,10 @@
 package com.datojo.socialpet.View.overlays
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,7 +15,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.datojo.socialpet.View.PixelArtImage
 
 @Composable
 fun MenuButton(onClick: (Boolean) -> Unit) {
@@ -80,7 +85,7 @@ fun PopUpButton(modifier: Modifier = Modifier, onClick: () -> Unit, name: String
 }
 
 @Composable
-fun CatInteraction(onClick: () -> Unit) {
+fun CatInteraction(onClick: () -> Unit, id: Int) {
     Row(){
         FloatingActionButton(
             onClick = { onClick() } ,
@@ -90,7 +95,12 @@ fun CatInteraction(onClick: () -> Unit) {
                 .width(75.dp)
                 .height(75.dp)
         ) {
-
+            Image(
+                painter = painterResource(id),
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(0.dp, 5.dp, 0.dp, 20.dp)
+            )
         }
     }
 }
