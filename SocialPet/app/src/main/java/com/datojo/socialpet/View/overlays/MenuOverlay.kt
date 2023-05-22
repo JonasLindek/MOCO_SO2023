@@ -14,10 +14,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.datojo.socialpet.StatsViewModel
+import com.datojo.socialpet.ViewModel.PetStatus
 
 @Composable
-fun MenuOverlay(screenRoutes: List<() -> Unit>, screenNames: List<String>, stats: StatsViewModel) {
+fun MenuOverlay(screenRoutes: List<() -> Unit>, screenNames: List<String>, stats: PetStatus) {
     var menuPopUpControl by remember { mutableStateOf(false) }
     var settingsPopUpControl by remember { mutableStateOf(false) }
     var notificationPopUpControl by remember { mutableStateOf(false) }

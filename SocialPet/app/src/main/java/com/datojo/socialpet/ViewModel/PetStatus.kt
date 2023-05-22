@@ -1,12 +1,13 @@
-package com.datojo.socialpet
+package com.datojo.socialpet.ViewModel
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import com.datojo.socialpet.Model.Pet
 import java.util.Date
 import java.util.concurrent.TimeUnit
 
-class StatsViewModel: ViewModel() {
+class PetStatus: ViewModel() {
     private var _health = mutableStateOf(1f)
     private var _hunger = mutableStateOf(.1f)
     private var _social = mutableStateOf(.1f)
@@ -16,10 +17,10 @@ class StatsViewModel: ViewModel() {
     val hunger: State<Float> = _hunger
     val social: State<Float> = _social
 
-    fun setStats(health: Float, hunger: Float, social: Float) {
-        _health.value = health
-        _hunger.value = hunger
-        _social.value = social
+    fun setStats(pet: Pet) {
+        _health.value = pet.health
+        _hunger.value = pet.hunger
+        _social.value = pet.social
     }
 
     fun calcStats(){

@@ -30,17 +30,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.datojo.socialpet.Model.Pet
 import com.datojo.socialpet.View.Navigation
 import com.datojo.socialpet.View.overlays.BackButton
+import com.datojo.socialpet.ViewModel.PetStatus
 
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val stats: StatsViewModel by viewModels()
+        val stats: PetStatus by viewModels()
         setContent {
-            stats.setStats(.75f, .5f, .5f)
+            val cat = Pet("Test", "Test", 0, .7f, .5f, .5f)
+            stats.setStats(cat)
             Navigation(stats)
         }
     }

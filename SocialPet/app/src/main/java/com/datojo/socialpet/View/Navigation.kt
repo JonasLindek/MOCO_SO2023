@@ -1,16 +1,16 @@
 package com.datojo.socialpet.View
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.datojo.socialpet.ViewModel.PetStatus
 import com.datojo.socialpet.View.screens.ArcadeScreen
 import com.datojo.socialpet.View.screens.FriendListScreen
 import com.datojo.socialpet.View.screens.HomeScreen
 import com.datojo.socialpet.View.screens.MallScreen
-import com.datojo.socialpet.StatsViewModel
-import kotlinx.coroutines.delay
+import java.util.Timer
+import kotlin.concurrent.scheduleAtFixedRate
 
 //Class to simplify Navigation by storing the route names and adding a feature to add arguments
 sealed class Screen(val route: String) {
@@ -30,14 +30,11 @@ sealed class Screen(val route: String) {
 
 //Navigation by NavController
 @Composable
-fun Navigation(stats: StatsViewModel) {
+fun Navigation(stats: PetStatus) {
     val navController = rememberNavController()
 
-    LaunchedEffect(Unit) {
-        while(true) {
-            stats.calcStats()
-            delay(1000)
-        }
+    Timer().scheduleAtFixedRate(1000, 1000) {
+        stats.calcStats()
     }
 
     NavHost(navController = navController, startDestination = Screen.HomeScreen.route) {

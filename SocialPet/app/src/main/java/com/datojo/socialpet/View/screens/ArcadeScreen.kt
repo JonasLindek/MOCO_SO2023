@@ -8,14 +8,14 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.datojo.socialpet.Background
+import com.datojo.socialpet.ViewModel.PetStatus
 import com.datojo.socialpet.R
-import com.datojo.socialpet.StatsViewModel
 import com.datojo.socialpet.View.Screen
 import com.datojo.socialpet.View.overlays.MenuOverlay
 import com.datojo.socialpet.View.theme.SocialPetTheme
 
 @Composable
-fun ArcadeScreen(navController: NavController, stats: StatsViewModel) {
+fun ArcadeScreen(navController: NavController, stats: PetStatus) {
     SocialPetTheme {
         Background(
             R.drawable.arcade, "Arcade",
