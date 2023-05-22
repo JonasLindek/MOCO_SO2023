@@ -9,8 +9,6 @@ import com.datojo.socialpet.View.screens.ArcadeScreen
 import com.datojo.socialpet.View.screens.FriendListScreen
 import com.datojo.socialpet.View.screens.HomeScreen
 import com.datojo.socialpet.View.screens.MallScreen
-import java.util.Timer
-import kotlin.concurrent.scheduleAtFixedRate
 
 //Class to simplify Navigation by storing the route names and adding a feature to add arguments
 sealed class Screen(val route: String) {
@@ -32,10 +30,6 @@ sealed class Screen(val route: String) {
 @Composable
 fun Navigation(stats: PetStatus) {
     val navController = rememberNavController()
-
-    Timer().scheduleAtFixedRate(1000, 1000) {
-        stats.calcStats()
-    }
 
     NavHost(navController = navController, startDestination = Screen.HomeScreen.route) {
         composable(route = Screen.HomeScreen.route) {

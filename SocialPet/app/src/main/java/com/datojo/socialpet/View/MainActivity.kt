@@ -30,22 +30,44 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewModelScope
 import com.datojo.socialpet.Model.Pet
 import com.datojo.socialpet.View.Navigation
 import com.datojo.socialpet.View.overlays.BackButton
 import com.datojo.socialpet.ViewModel.PetStatus
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.util.Date
+import java.util.Timer
+import kotlin.concurrent.scheduleAtFixedRate
 
 
 class MainActivity : ComponentActivity() {
+    private val stats: PetStatus by viewModels()
+    private val cat =
+        Pet("Test", "Test", 0, .7f, .5f, .5f, Date(Date().time-360)) //TODO: Get from storage
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val stats: PetStatus by viewModels()
         setContent {
-            val cat = Pet("Test", "Test", 0, .7f, .5f, .5f)
+            //set stats from storage
             stats.setStats(cat)
             Navigation(stats)
         }
+
+        //calc stat change after time away and update livedata in background
+        stats.viewModelScope.launch(Dispatchers.Default) {
+            stats.calcStats(true)
+            Timer().scheduleAtFixedRate(1000, 1000) {
+                stats.calcStats()
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        stats.saveStats(cat) //TODO: Save to storage
     }
 }
 

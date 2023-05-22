@@ -21,12 +21,22 @@ class PetStatus: ViewModel() {
         _health.value = pet.health
         _hunger.value = pet.hunger
         _social.value = pet.social
+        lastOnline = pet.lastOnline
     }
 
-    fun calcStats(){
-        val secondsInterval = 1f
-        val magnitude = 25f
-        val buffer = 0
+    fun saveStats(pet: Pet): Pet {
+        pet.health = _health.value
+        pet.hunger = _hunger.value
+        pet.social = _social.value
+        pet.lastOnline = lastOnline
+
+        return pet
+    }
+
+    fun calcStats(started: Boolean = false){
+        val secondsInterval = 1f //In which Interval parts of the stat should be lost
+        val magnitude = 100f //Control how much one part is
+        val buffer = 3600 //When offline for extended time what time should be ignored
 
         if(_health.value <= 0f) {
             _health.value = 0f
@@ -39,8 +49,11 @@ class PetStatus: ViewModel() {
             var secondsTimeDiff = TimeUnit.MILLISECONDS.toSeconds(timeDiff)
 
             if (secondsTimeDiff >= secondsInterval) {
-                if (secondsTimeDiff > buffer) //doesnt work for closed app under buffer need to check if app was closed and if under buffer dont change stats
-                    secondsTimeDiff -= buffer
+                if (started)
+                    if (secondsTimeDiff > buffer)
+                        secondsTimeDiff -= buffer
+                    else
+                        secondsTimeDiff = 0
 
                 _social.value -= (secondsTimeDiff / secondsInterval) / magnitude
                 if (_social.value < 0f) _social.value = 0f
