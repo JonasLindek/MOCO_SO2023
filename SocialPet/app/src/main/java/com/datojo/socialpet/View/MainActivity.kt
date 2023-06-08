@@ -1,5 +1,6 @@
 package com.datojo.socialpet
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -37,6 +38,10 @@ import com.datojo.socialpet.View.overlays.BackButton
 import com.datojo.socialpet.ViewModel.PetStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.io.BufferedReader
+import java.io.IOException
+import java.io.InputStreamReader
+import java.io.OutputStreamWriter
 import java.util.Date
 import java.util.Timer
 import kotlin.concurrent.scheduleAtFixedRate
@@ -45,14 +50,14 @@ import kotlin.concurrent.scheduleAtFixedRate
 class MainActivity : ComponentActivity() {
     private val stats: PetStatus by viewModels()
     private val cat =
-        Pet("Test", "Test", 0, .7f, .5f, .5f, Date(Date().time-360)) //TODO: Get from storage
+        Pet("Test", "Test", 0, .7f, .5f, .5f, Date(Date().time-360), 0) //TODO: Get from storage
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
             //set stats from storage
-            stats.setStats(cat)
+            stats.setStats(readStatsFromInternalStorage("petStats", cat))
             Navigation(stats)
         }
 
@@ -65,9 +70,55 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        stats.saveStats(cat) //TODO: Save to storage
+    override fun onPause() {
+        super.onPause()
+        saveStatsToInternalStorage("petStats", stats.saveStats(cat))
+    }
+
+    private fun saveStatsToInternalStorage(filename: String, pet: Pet) {
+        try {
+            val fOut = openFileOutput(filename, Context.MODE_PRIVATE)
+            val writer = OutputStreamWriter(fOut)
+
+            writer.write(pet.name + "\n")
+            writer.write(pet.breed + "\n")
+            writer.write(pet.age.toString() + "\n")
+            writer.write(pet.health.toString() + "\n")
+            writer.write(pet.hunger.toString() + "\n")
+            writer.write(pet.thirst.toString() + "\n")
+            writer.write(pet.lastOnline.time.toString() + "\n")
+            writer.write(pet.currency.toString() + "\n")
+
+            writer.close()
+            fOut.close()
+        } catch(e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun readStatsFromInternalStorage(filename: String, pet: Pet): Pet{
+        try {
+            val fIn = openFileInput(filename)
+            val streamReader = InputStreamReader(fIn)
+            val bufferedReader = BufferedReader(streamReader)
+
+            pet.name = bufferedReader.readLine()
+            pet.breed = bufferedReader.readLine()
+            pet.age = bufferedReader.readLine().toInt()
+            pet.health = bufferedReader.readLine().toFloat()
+            pet.hunger = bufferedReader.readLine().toFloat()
+            pet.thirst = bufferedReader.readLine().toFloat()
+            pet.lastOnline = Date(bufferedReader.readLine().toLong())
+            pet.currency = bufferedReader.readLine().toInt()
+
+            bufferedReader.close()
+            streamReader.close()
+            fIn.close()
+        } catch(e: IOException) {
+            e.printStackTrace()
+        }
+
+        return pet
     }
 }
 

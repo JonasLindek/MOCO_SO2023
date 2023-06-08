@@ -10,24 +10,24 @@ import java.util.concurrent.TimeUnit
 class PetStatus: ViewModel() {
     private var _health = mutableStateOf(1f)
     private var _hunger = mutableStateOf(.1f)
-    private var _social = mutableStateOf(.1f)
+    private var _thirst = mutableStateOf(.1f)
     private var lastOnline = Date()
 
     val health: State<Float> = _health
     val hunger: State<Float> = _hunger
-    val social: State<Float> = _social
+    val thirst: State<Float> = _thirst
 
     fun setStats(pet: Pet) {
         _health.value = pet.health
-        _hunger.value = pet.hunger
-        _social.value = pet.social
+        _hunger.value = pet.thirst
+        _thirst.value = pet.thirst
         lastOnline = pet.lastOnline
     }
 
     fun saveStats(pet: Pet): Pet {
         pet.health = _health.value
-        pet.hunger = _hunger.value
-        pet.social = _social.value
+        pet.thirst = _hunger.value
+        pet.thirst = _thirst.value
         pet.lastOnline = lastOnline
 
         return pet
@@ -41,7 +41,7 @@ class PetStatus: ViewModel() {
         if(_health.value <= 0f) {
             _health.value = 0f
             _hunger.value = 0f
-            _social.value = 0f
+            _thirst.value = 0f
         }
         else {
             val currDate = Date()
@@ -55,11 +55,11 @@ class PetStatus: ViewModel() {
                     else
                         secondsTimeDiff = 0
 
-                _social.value -= (secondsTimeDiff / secondsInterval) / magnitude
-                if (_social.value < 0f) _social.value = 0f
+                _thirst.value -= (secondsTimeDiff / secondsInterval) / magnitude
+                if (_thirst.value < 0f) _thirst.value = 0f
 
 
-                if (_social.value == 0f)
+                if (_thirst.value == 0f)
                     _hunger.value -= (secondsTimeDiff / secondsInterval) / magnitude / 2
                 else
                     _hunger.value -= (secondsTimeDiff / secondsInterval) / magnitude
@@ -92,12 +92,12 @@ class PetStatus: ViewModel() {
 
     fun pet(): Int {
         if (_health.value > 0f) {
-            if (_social.value == 1f)
+            if (_thirst.value == 1f)
                 return 1
 
-            _social.value += 0.125f
-            if (_social.value > 1f)
-                _social.value = 1f
+            _thirst.value += 0.125f
+            if (_thirst.value > 1f)
+                _thirst.value = 1f
             return 0
         }
         return -1

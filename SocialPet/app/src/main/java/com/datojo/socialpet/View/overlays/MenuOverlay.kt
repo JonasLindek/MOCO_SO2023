@@ -50,7 +50,7 @@ fun MenuOverlay(screenRoutes: List<() -> Unit>, screenNames: List<String>, stats
         // TODO: Healthbars
         StatusBar(Color.Red, stats.health.value)
         StatusBar(Color.Green, stats.hunger.value)
-        StatusBar(Color(.2f,.4f,1f), stats.social.value)
+        StatusBar(Color(.2f,.4f,1f), stats.thirst.value)
         Row {
             MenuButton { change -> menuPopUpControl = change }
         }
