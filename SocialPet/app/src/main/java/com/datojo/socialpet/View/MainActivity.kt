@@ -50,7 +50,8 @@ import kotlin.concurrent.scheduleAtFixedRate
 class MainActivity : ComponentActivity() {
     private val stats: PetStatus by viewModels()
     private val cat =
-        Pet("Test", "Test", 0, .7f, .5f, .5f, Date(Date().time-360), 0) //TODO: Get from storage
+        Pet("Test", "Test", 0, .7f, .5f, .5f, Date(Date().time-360), 0)
+    private val contacts = listOf("Jonas Lindek", "Tom Küper", "Daniel Sonnenberg")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,7 +59,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             //set stats from storage
             stats.setStats(readStatsFromInternalStorage("petStats", cat))
-            Navigation(stats)
+            Navigation(stats, contacts)
         }
 
         //calc stat change after time away and update livedata in background

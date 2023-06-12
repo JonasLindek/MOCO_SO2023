@@ -25,24 +25,37 @@ sealed class Screen(val route: String) {
     }
 }
 
-
 //Navigation by NavController
 @Composable
-fun Navigation(stats: PetStatus) {
+fun Navigation(stats: PetStatus, contacts: List<String>) {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = Screen.HomeScreen.route) {
         composable(route = Screen.HomeScreen.route) {
-            HomeScreen(navController = navController, stats)
+            HomeScreen(
+                {navController.navigate(Screen.FriendListScreen.route)},
+                {navController.navigate(Screen.ArcadeScreen.route)},
+                {navController.navigate(Screen.MallScreen.route)},
+                stats)
         }
         composable(route = Screen.FriendListScreen.route) {
-            FriendListScreen(navController = navController)
+            FriendListScreen(
+                {navController.popBackStack()},
+                contacts)
         }
         composable(route = Screen.ArcadeScreen.route) {
-            ArcadeScreen(navController = navController, stats)
+            ArcadeScreen(
+                {navController.navigate(Screen.FriendListScreen.route)},
+                {navController.navigate(Screen.HomeScreen.route)},
+                {navController.navigate(Screen.MallScreen.route)},
+                stats)
         }
         composable(route = Screen.MallScreen.route) {
-            MallScreen(navController = navController, stats)
+            MallScreen(
+                {navController.navigate(Screen.FriendListScreen.route)},
+                {navController.navigate(Screen.HomeScreen.route)},
+                {navController.navigate(Screen.ArcadeScreen.route)},
+                stats)
         }
     }
 }

@@ -90,7 +90,7 @@ class PetStatus: ViewModel() {
         return -1
     }
 
-    fun pet(): Int {
+    fun drink(): Int {
         if (_health.value > 0f) {
             if (_thirst.value == 1f)
                 return 1

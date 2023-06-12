@@ -9,18 +9,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.datojo.socialpet.Background
 import com.datojo.socialpet.ViewModel.PetStatus
 import com.datojo.socialpet.View.overlays.MenuOverlay
 import com.datojo.socialpet.R
 import com.datojo.socialpet.View.CatAnimation
-import com.datojo.socialpet.View.Screen
 import com.datojo.socialpet.View.overlays.CatInteraction
 import com.datojo.socialpet.View.theme.SocialPetTheme
 
 @Composable
-fun HomeScreen(navController : NavController, stats: PetStatus) {
+fun HomeScreen(friendListNav: () -> Unit, arcadeNav: () -> Unit, mallNav: () -> Unit, stats: PetStatus) {
     SocialPetTheme {
         Background(
             R.drawable.bedroom, "Bedroom",
@@ -30,16 +28,8 @@ fun HomeScreen(navController : NavController, stats: PetStatus) {
         )
         CatAnimation()
         MenuOverlay(
-            listOf(
-                { navController.navigate(Screen.FriendListScreen.route) },
-                { navController.navigate(Screen.ArcadeScreen.route) },
-                { navController.navigate(Screen.MallScreen.route) }
-            ),
-            listOf(
-                "Friends",
-                "Arcade",
-                "Mall"
-            ),
+            listOf(friendListNav, arcadeNav, mallNav),
+            listOf("Friends", "Arcade", "Mall"),
             stats
         )
         Column(
@@ -50,7 +40,7 @@ fun HomeScreen(navController : NavController, stats: PetStatus) {
             verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.Bottom)
         ) {
             CatInteraction({stats.feed()}, R.drawable.foodbowl)
-            CatInteraction({stats.pet()}, R.drawable.waterbowl)
+            CatInteraction({stats.drink()}, R.drawable.waterbowl)
         }
     }
 }

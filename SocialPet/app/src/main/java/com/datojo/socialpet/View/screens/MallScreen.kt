@@ -6,16 +6,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.datojo.socialpet.Background
 import com.datojo.socialpet.View.overlays.MenuOverlay
 import com.datojo.socialpet.R
 import com.datojo.socialpet.ViewModel.PetStatus
-import com.datojo.socialpet.View.Screen
 import com.datojo.socialpet.View.theme.SocialPetTheme
 
 @Composable
-fun MallScreen(navController: NavController, stats: PetStatus) {
+fun MallScreen(friendListNav: () -> Unit, homeNav: () -> Unit, arcadeNav: () -> Unit, stats: PetStatus) {
     SocialPetTheme {
         Background(
             R.drawable.mall, "Mall",
@@ -25,16 +23,8 @@ fun MallScreen(navController: NavController, stats: PetStatus) {
                 .padding(0.dp, 275.dp)
         )
         MenuOverlay(
-            listOf(
-                { navController.navigate(Screen.FriendListScreen.route) },
-                { navController.navigate(Screen.HomeScreen.route) },
-                { navController.navigate(Screen.ArcadeScreen.route) }
-            ),
-            listOf(
-                "Friends",
-                "Home",
-                "Arcade"
-            ),
+            listOf(friendListNav, homeNav, arcadeNav),
+            listOf("Friends", "Home", "Arcade"),
             stats
         )
     }
