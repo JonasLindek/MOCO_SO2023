@@ -49,22 +49,22 @@ fun SettingsPopUp(onDismiss: (Boolean) -> Unit, onBack: (Boolean) -> Unit, onCat
                 .height(70.dp)
                 .padding(12.dp, 6.dp)
 
-            PopUpButton(modifier,
+            TextButton(modifier,
                 onClick = {
                     onCategory[0](true)
                     onDismiss(false) }, "Notifications")
 
-            PopUpButton(modifier,
+            TextButton(modifier,
                 onClick = {
                     onCategory[1](true)
                     onDismiss(false) }, "Audio")
 
-            PopUpButton(modifier,
+            TextButton(modifier,
                 onClick = {
                     onCategory[2](true)
                     onDismiss(false) }, "About")
 
-            PopUpButton(
+            TextButton(
                 Modifier
                     .width(110.dp)
                     .height(50.dp)

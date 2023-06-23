@@ -9,6 +9,7 @@ import com.datojo.socialpet.View.screens.ArcadeScreen
 import com.datojo.socialpet.View.screens.FriendListScreen
 import com.datojo.socialpet.View.screens.HomeScreen
 import com.datojo.socialpet.View.screens.MallScreen
+import com.datojo.socialpet.ViewModel.Inventory
 
 //Class to simplify Navigation by storing the route names and adding a feature to add arguments
 sealed class Screen(val route: String) {
@@ -27,7 +28,7 @@ sealed class Screen(val route: String) {
 
 //Navigation by NavController
 @Composable
-fun Navigation(stats: PetStatus, contacts: List<String>) {
+fun Navigation(stats: PetStatus, inventory: Inventory, contacts: List<String>) {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = Screen.HomeScreen.route) {
@@ -36,7 +37,7 @@ fun Navigation(stats: PetStatus, contacts: List<String>) {
                 {navController.navigate(Screen.FriendListScreen.route)},
                 {navController.navigate(Screen.ArcadeScreen.route)},
                 {navController.navigate(Screen.MallScreen.route)},
-                stats)
+                stats, inventory)
         }
         composable(route = Screen.FriendListScreen.route) {
             FriendListScreen(
@@ -48,14 +49,14 @@ fun Navigation(stats: PetStatus, contacts: List<String>) {
                 {navController.navigate(Screen.FriendListScreen.route)},
                 {navController.navigate(Screen.HomeScreen.route)},
                 {navController.navigate(Screen.MallScreen.route)},
-                stats)
+                stats, inventory)
         }
         composable(route = Screen.MallScreen.route) {
             MallScreen(
                 {navController.navigate(Screen.FriendListScreen.route)},
                 {navController.navigate(Screen.HomeScreen.route)},
                 {navController.navigate(Screen.ArcadeScreen.route)},
-                stats)
+                stats, inventory)
         }
     }
 }

@@ -1,7 +1,6 @@
 package com.datojo.socialpet.View.overlays
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -17,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.datojo.socialpet.View.PixelArtImage
 
 @Composable
 fun MenuButton(onClick: (Boolean) -> Unit) {
@@ -68,7 +66,7 @@ fun AddButton(onClick: () -> Unit) {
 }
 
 @Composable
-fun PopUpButton(modifier: Modifier = Modifier, onClick: () -> Unit, name: String) {
+fun TextButton(modifier: Modifier = Modifier, onClick: () -> Unit, name: String) {
     Row() {
         Button(
             modifier = modifier,

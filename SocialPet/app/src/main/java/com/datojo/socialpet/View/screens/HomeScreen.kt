@@ -16,9 +16,10 @@ import com.datojo.socialpet.R
 import com.datojo.socialpet.View.CatAnimation
 import com.datojo.socialpet.View.overlays.CatInteraction
 import com.datojo.socialpet.View.theme.SocialPetTheme
+import com.datojo.socialpet.ViewModel.Inventory
 
 @Composable
-fun HomeScreen(friendListNav: () -> Unit, arcadeNav: () -> Unit, mallNav: () -> Unit, stats: PetStatus) {
+fun HomeScreen(friendListNav: () -> Unit, arcadeNav: () -> Unit, mallNav: () -> Unit, stats: PetStatus, inventory: Inventory) {
     SocialPetTheme {
         Background(
             R.drawable.bedroom, "Bedroom",
@@ -39,8 +40,16 @@ fun HomeScreen(friendListNav: () -> Unit, arcadeNav: () -> Unit, mallNav: () -> 
             horizontalAlignment = Alignment.End,
             verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.Bottom)
         ) {
-            CatInteraction({stats.feed()}, R.drawable.foodbowl)
-            CatInteraction({stats.drink()}, R.drawable.waterbowl)
+            CatInteraction({
+                if(!inventory.isEmptyFood()) {
+                    stats.feed()
+                    inventory.subFood()
+                } }, R.drawable.foodbowl)
+            CatInteraction({
+                if(!inventory.isEmptyWater()) {
+                    stats.drink()
+                    inventory.subWater()
+                } }, R.drawable.waterbowl)
         }
     }
 }

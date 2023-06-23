@@ -49,7 +49,7 @@ fun AboutPopUp(onDismiss: (Boolean) -> Unit, onBack: (Boolean) -> Unit) {
                 textAlign = TextAlign.Left
             )
 
-            PopUpButton(
+            TextButton(
                 Modifier
                     .width(110.dp)
                     .height(50.dp)

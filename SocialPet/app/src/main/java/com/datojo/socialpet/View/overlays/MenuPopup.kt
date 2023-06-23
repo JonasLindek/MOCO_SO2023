@@ -48,22 +48,22 @@ fun MenuPopUp(onDismiss: (Boolean) -> Unit, onSettings: (Boolean) -> Unit, scree
                 .height(70.dp)
                 .padding(12.dp, 6.dp)
 
-            PopUpButton(modifier,
+            TextButton(modifier,
                 onClick = {
                     screenRoutes[1]()
                     onDismiss(false) }, name = screenNames[1])
 
-            PopUpButton(modifier,
+            TextButton(modifier,
                 onClick = {
                     screenRoutes[2]()
                     onDismiss(false) }, name = screenNames[2])
 
-            PopUpButton(modifier,
+            TextButton(modifier,
                 onClick = {
                     screenRoutes[0]()
                     onDismiss(false) }, name = screenNames[0])
 
-            PopUpButton(modifier,
+            TextButton(modifier,
                 onClick = {
                     onSettings(true)
                     onDismiss(false) }, name = "Settings")

@@ -9,11 +9,13 @@ import androidx.compose.ui.unit.dp
 import com.datojo.socialpet.Background
 import com.datojo.socialpet.View.overlays.MenuOverlay
 import com.datojo.socialpet.R
+import com.datojo.socialpet.View.overlays.ShopOverlay
 import com.datojo.socialpet.ViewModel.PetStatus
 import com.datojo.socialpet.View.theme.SocialPetTheme
+import com.datojo.socialpet.ViewModel.Inventory
 
 @Composable
-fun MallScreen(friendListNav: () -> Unit, homeNav: () -> Unit, arcadeNav: () -> Unit, stats: PetStatus) {
+fun MallScreen(friendListNav: () -> Unit, homeNav: () -> Unit, arcadeNav: () -> Unit, stats: PetStatus, inventory: Inventory) {
     SocialPetTheme {
         Background(
             R.drawable.mall, "Mall",
@@ -27,5 +29,6 @@ fun MallScreen(friendListNav: () -> Unit, homeNav: () -> Unit, arcadeNav: () -> 
             listOf("Friends", "Home", "Arcade"),
             stats
         )
+        ShopOverlay(inventory)
     }
 }

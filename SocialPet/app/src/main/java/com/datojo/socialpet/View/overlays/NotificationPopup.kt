@@ -53,7 +53,7 @@ fun NotificationPopUp(onDismiss: (Boolean) -> Unit, onBack: (Boolean) -> Unit) {
                 onCheckedChange = { checkedState.value = it }
             )
 
-            PopUpButton(
+            TextButton(
                 Modifier
                     .width(110.dp)
                     .height(50.dp)

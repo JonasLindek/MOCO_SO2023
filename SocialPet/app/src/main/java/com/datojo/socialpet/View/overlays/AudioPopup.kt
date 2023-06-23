@@ -86,7 +86,7 @@ fun AudioPopUp(onDismiss: (Boolean) -> Unit, onBack: (Boolean) -> Unit) {
                 )
             }
 
-            PopUpButton(
+            TextButton(
                 Modifier
                     .width(110.dp)
                     .height(50.dp)
