@@ -25,7 +25,7 @@ class MainActivity : ComponentActivity() {
     private val stats: PetStatus by viewModels()
     private val inventory: Inventory by viewModels()
     private val cat =
-        Pet("Test", "Test", 0, .7f, .5f, .5f, Date(Date().time-360))
+        Pet("Test", "Test", 0, .7f, .5f, .5f, Date())
     private val items =
         Items(1, 1, 1)
 

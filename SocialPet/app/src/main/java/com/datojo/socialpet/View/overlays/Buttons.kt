@@ -2,6 +2,7 @@ package com.datojo.socialpet.View.overlays
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -83,20 +84,25 @@ fun TextButton(modifier: Modifier = Modifier, onClick: () -> Unit, name: String)
 }
 
 @Composable
-fun CatInteraction(onClick: () -> Unit, id: Int) {
+fun CatInteraction(onClick: () -> Unit, id: Int, count: Int) {
     Row(){
-        FloatingActionButton(
+        Button(
             onClick = { onClick() } ,
             shape = CircleShape,
-            containerColor = Color.White,
+            colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray.copy(alpha = .0f)),
             modifier = Modifier
-                .width(75.dp)
-                .height(75.dp)
+                .width(100.dp)
+                .height(100.dp)
         ) {
+            Text(
+                text = count.toString(),
+                color = Color.White
+            )
             Image(
                 painter = painterResource(id),
                 contentDescription = null,
                 modifier = Modifier
+                    .fillMaxSize()
                     .padding(0.dp, 5.dp, 0.dp, 20.dp)
             )
         }

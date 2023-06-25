@@ -79,7 +79,7 @@ class PetStatus: ViewModel() {
 
     fun feed(): Int {
         if(_health.value > 0f) {
-            if (_hunger.value == 1f)
+            if (_hunger.value >= 1f)
                 return 1
 
             _hunger.value += 0.25f
@@ -92,7 +92,7 @@ class PetStatus: ViewModel() {
 
     fun drink(): Int {
         if (_health.value > 0f) {
-            if (_thirst.value == 1f)
+            if (_thirst.value >= 1f)
                 return 1
 
             _thirst.value += 0.125f

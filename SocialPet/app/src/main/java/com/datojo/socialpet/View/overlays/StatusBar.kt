@@ -16,15 +16,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import com.datojo.socialpet.R
 
 @Composable
-fun StatusBar(color: Color, state: Float) {
+fun StatusBar(icon: Int, color: Color, state: Float) {
     Row(
         modifier = Modifier.padding(0.dp, 4.dp)
     ) {
         Image(
-            painter= painterResource(id = R.drawable.heart),
+            painter= painterResource(id = icon),
             contentDescription = "Heart",
             modifier = Modifier
                 .width(28.dp)

@@ -32,7 +32,7 @@ fun ShopPopUp(onDismiss: (Boolean) -> Unit, inventory: Inventory) {
     ) {
         Column(
             modifier = Modifier
-                .size(270.dp, 200.dp)
+                .size(270.dp, 175.dp)
                 .clip(RoundedCornerShape(10.dp))
                 .background(Color.LightGray.copy(alpha = .6f)),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -43,12 +43,6 @@ fun ShopPopUp(onDismiss: (Boolean) -> Unit, inventory: Inventory) {
                 .fillMaxWidth()
                 .height(70.dp)
                 .padding(12.dp, 6.dp)
-
-            Text(
-                text = "Money: " + inventory.currency.value.toString(),
-                color = Color.White,
-                textAlign = TextAlign.Center
-            )
 
             Row() {
                 Column(

@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.datojo.socialpet.R
 import com.datojo.socialpet.ViewModel.PetStatus
 
 @Composable
@@ -48,9 +49,9 @@ fun MenuOverlay(screenRoutes: List<() -> Unit>, screenNames: List<String>, stats
         verticalArrangement = Arrangement.Bottom
     ) {
         // TODO: Healthbars
-        StatusBar(Color.Red, stats.health.value)
-        StatusBar(Color.Green, stats.hunger.value)
-        StatusBar(Color(.2f,.4f,1f), stats.thirst.value)
+        StatusBar(R.drawable.heart, Color.Red, stats.health.value)
+        StatusBar(R.drawable.foodbowl, Color.Green, stats.hunger.value)
+        StatusBar(R.drawable.waterbowl, Color(.2f,.4f,1f), stats.thirst.value)
         Row {
             MenuButton { change -> menuPopUpControl = change }
         }

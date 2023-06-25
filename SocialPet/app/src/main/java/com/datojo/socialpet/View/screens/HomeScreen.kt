@@ -2,6 +2,7 @@ package com.datojo.socialpet.View.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -40,16 +41,20 @@ fun HomeScreen(friendListNav: () -> Unit, arcadeNav: () -> Unit, mallNav: () -> 
             horizontalAlignment = Alignment.End,
             verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.Bottom)
         ) {
-            CatInteraction({
-                if(!inventory.isEmptyFood()) {
-                    stats.feed()
-                    inventory.subFood()
-                } }, R.drawable.foodbowl)
-            CatInteraction({
-                if(!inventory.isEmptyWater()) {
-                    stats.drink()
-                    inventory.subWater()
-                } }, R.drawable.waterbowl)
+            Row() {
+                CatInteraction({
+                    if (!inventory.isEmptyFood()) {
+                        if (stats.feed() == 0)
+                            inventory.subFood()
+                    }
+                }, R.drawable.foodbowl, inventory.food.value)
+                CatInteraction({
+                    if (!inventory.isEmptyWater()) {
+                        if (stats.drink() == 0)
+                            inventory.subWater()
+                    }
+                }, R.drawable.waterbowl, inventory.water.value)
+            }
         }
     }
 }
