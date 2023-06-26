@@ -1,7 +1,5 @@
 package com.datojo.socialpet.View
 
-import android.Manifest
-import android.os.Build
 import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.AdvertisingOptions
 import com.google.android.gms.nearby.connection.ConnectionInfo
