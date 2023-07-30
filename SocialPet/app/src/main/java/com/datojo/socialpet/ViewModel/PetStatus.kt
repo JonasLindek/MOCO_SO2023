@@ -5,12 +5,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.datojo.socialpet.Model.Pet
 import java.util.Date
-import java.util.concurrent.TimeUnit
 
 class PetStatus: ViewModel() {
     private var _health = mutableStateOf(1f)
-    private var _hunger = mutableStateOf(.1f)
-    private var _thirst = mutableStateOf(.1f)
+    private var _hunger = mutableStateOf(1f)
+    private var _thirst = mutableStateOf(1f)
     private var _lastOnline = Date()
 
     val health: State<Float> = _health
@@ -33,8 +32,8 @@ class PetStatus: ViewModel() {
         return pet
     }
 
-    val buffer = 60 //When offline for extended time what time should be ignored in seconds
-    val secondsInterval = 1f //In which Interval parts of the stat should be lost
+    val buffer: Long = 0 //When offline for extended time what time should be ignored in milliseconds
+    val milliSecondsInterval = 1000f //In which Interval parts of the stat should be lost in milliseconds
     val magnitude = 100f //Control how much one part is
     fun calcStats(started: Boolean = false){
         if(_health.value <= 0f) {
@@ -44,32 +43,41 @@ class PetStatus: ViewModel() {
         }
         else {
             val currDate = Date()
-            val timeDiff = currDate.time - _lastOnline.time
-            var secondsTimeDiff = TimeUnit.MILLISECONDS.toSeconds(timeDiff)
+            var timeDiff = (currDate.time - _lastOnline.time).toFloat()
 
-            if (secondsTimeDiff >= secondsInterval) {
+            if (timeDiff >= milliSecondsInterval) {
                 if (started)
-                    if (secondsTimeDiff > buffer)
-                        secondsTimeDiff -= buffer
+                    if (timeDiff > buffer)
+                        timeDiff -= buffer
                     else
-                        secondsTimeDiff = 0
-
-                _thirst.value -= (secondsTimeDiff / secondsInterval) / magnitude
-                if (thirst.value < 0f) _thirst.value = 0f
+                        timeDiff = 0f
 
 
-                if (thirst.value == 0f)
-                    _hunger.value -= (secondsTimeDiff / secondsInterval) / magnitude / 2
-                else
-                    _hunger.value -= (secondsTimeDiff / secondsInterval) / magnitude
-                if (hunger.value < 0f) _hunger.value = 0f
+                var tmp = _thirst.value
+                var thirstDrain = timeDiff
+                _thirst.value -= (timeDiff / milliSecondsInterval) / magnitude
+                if (thirst.value <= 0f) {
+                    _thirst.value = 0f
+                    thirstDrain = (tmp * milliSecondsInterval * magnitude)
+                }
 
 
-                if (hunger.value == 0f)
-                    _health.value -= (secondsTimeDiff / secondsInterval) / magnitude
-                else if (health.value < 1f && health.value > 0f)
-                    _health.value += (secondsTimeDiff / secondsInterval) / magnitude / 2
-                if (health.value > 1f) _health.value = 1f
+                tmp = _hunger.value
+                var hungerDrain = timeDiff
+                _hunger.value -= (thirstDrain / milliSecondsInterval) / magnitude
+                _hunger.value -= ((timeDiff - thirstDrain) / milliSecondsInterval) / magnitude * 2
+                if (hunger.value <= 0f) {
+                    _hunger.value = 0f
+                    tmp -= (thirstDrain / milliSecondsInterval) / magnitude
+                    hungerDrain = (tmp * milliSecondsInterval * magnitude / 2) + thirstDrain
+                }
+
+
+                _health.value += (hungerDrain / milliSecondsInterval) / magnitude * 2
+                if (_health.value > 1f) _health.value = 1f
+                _health.value -= ((timeDiff - hungerDrain) / milliSecondsInterval) / magnitude
+                if (_health.value < 0f) _health.value = 0f
+
 
                 _lastOnline = currDate
             }

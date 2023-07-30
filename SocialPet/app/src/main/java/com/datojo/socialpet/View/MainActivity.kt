@@ -32,7 +32,7 @@ class MainActivity : ComponentActivity() {
     private val stats: PetStatus by viewModels()
     private val inventory: Inventory by viewModels()
     private val cat =
-        Pet("Test", "Test", 0, .7f, .5f, .5f, Date())
+        Pet("Test", "Test", 0, 1f, .5f, .5f, Date())
     private val items =
         Items(100, 100, 100)
 
@@ -79,9 +79,9 @@ class MainActivity : ComponentActivity() {
 
     override fun onPause() {
         super.onPause()
+        predict(stats, applicationContext)
         stats.saveStats(cat).saveToInternalStorage("petStats", applicationContext)
         inventory.saveItems(items).saveToInternalStorage("inventory", applicationContext)
-        predict(stats, applicationContext)
     }
 }
 

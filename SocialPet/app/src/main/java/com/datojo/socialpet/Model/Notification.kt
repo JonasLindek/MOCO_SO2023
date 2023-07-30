@@ -11,55 +11,63 @@ import com.datojo.socialpet.ViewModel.PetStatus
 import java.util.Date
 
 fun predict(stats: PetStatus, context: Context) {
+    val health = stats.health.value
+    val hunger = stats.hunger.value
+    val thirst = stats.thirst.value
+    val currDate = Date()
+    val interval = stats.milliSecondsInterval
+    val magnitude = stats.magnitude
+    val buffer = stats.buffer
+
     val thirstDrain =
-        if (stats.thirst.value > 0)
-            (stats.thirst.value * stats.secondsInterval * stats.magnitude).toInt()
+        if (thirst > 0)
+            (thirst * interval * magnitude)
         else
-            0
+            0f
 
     var hungerDrain =
-        if (stats.hunger.value > 0)
-            (stats.hunger.value * stats.secondsInterval * stats.magnitude).toInt()
+        if (hunger > 0)
+            (hunger * interval * magnitude)
         else
-            0
+            0f
     if (hungerDrain > thirstDrain) {
-        var tmp = stats.hunger.value
-        tmp -= (thirstDrain / stats.secondsInterval) / stats.magnitude
+        var tmp = hunger
+        tmp -= (thirstDrain / interval) / magnitude
 
-        hungerDrain = (tmp * stats.secondsInterval * stats.magnitude * 2).toInt() + thirstDrain
+        hungerDrain = (tmp * interval * magnitude / 2) + thirstDrain
     }
 
-    var tmp = stats.health.value + (hungerDrain / stats.secondsInterval) / stats.magnitude / 2
+    var tmp = health + (hungerDrain / interval) / magnitude / 2
     if (tmp > 1) tmp = 1f
     val healthDrainLow =
-        if (stats.health.value  > .25)
-            ((tmp - .25) * stats.secondsInterval * stats.magnitude).toInt() + hungerDrain
+        if (tmp > .25)
+            ((tmp - .25f) * interval * magnitude) + hungerDrain
         else
-            0
+            0f
     val healthDrainEmpty =
-        if (stats.health.value  > .25)
-            (tmp * stats.secondsInterval * stats.magnitude).toInt() + hungerDrain
+        if (tmp > 0)
+            (tmp * interval * magnitude) + hungerDrain
         else
-            0
+            0f
 
     val healthLow =
         if (healthDrainLow > 0)
-            Date(Date().time + healthDrainLow * 1000)
+            Date(currDate.time + healthDrainLow.toLong() + buffer)
         else
             null
     val healthEmpty =
         if (healthDrainEmpty > 0)
-            Date(Date().time + healthDrainEmpty * 1000)
+            Date(currDate.time + healthDrainEmpty.toLong() + buffer)
         else
             null
     val hungerEmpty =
         if (hungerDrain > 0)
-            Date(Date().time + hungerDrain * 1000)
+            Date(currDate.time + hungerDrain.toLong() + buffer)
         else
             null
     val thirstEmpty =
         if (thirstDrain > 0)
-            Date(Date().time + thirstDrain * 1000)
+            Date(currDate.time + thirstDrain.toLong() + buffer)
         else
             null
 
