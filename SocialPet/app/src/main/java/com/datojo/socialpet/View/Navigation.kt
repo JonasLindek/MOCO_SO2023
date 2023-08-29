@@ -10,6 +10,7 @@ import com.datojo.socialpet.View.screens.FriendListScreen
 import com.datojo.socialpet.View.screens.HomeScreen
 import com.datojo.socialpet.View.screens.MallScreen
 import com.datojo.socialpet.ViewModel.Inventory
+import com.google.android.gms.nearby.connection.EndpointDiscoveryCallback
 
 //Class to simplify Navigation by storing the route names and adding a feature to add arguments
 sealed class Screen(val route: String) {
@@ -28,7 +29,12 @@ sealed class Screen(val route: String) {
 
 //Navigation by NavController
 @Composable
-fun Navigation(stats: PetStatus, inventory: Inventory, contacts: List<String>) {
+fun Navigation(
+    stats: PetStatus,
+    inventory: Inventory,
+    contacts: List<String>,
+    nearbyDevices: List<EndpointDiscoveryCallback>
+) {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = Screen.HomeScreen.route) {
@@ -42,7 +48,7 @@ fun Navigation(stats: PetStatus, inventory: Inventory, contacts: List<String>) {
         composable(route = Screen.FriendListScreen.route) {
             FriendListScreen(
                 {navController.popBackStack()},
-                contacts)
+                contacts,nearbyDevices)
         }
         composable(route = Screen.ArcadeScreen.route) {
             ArcadeScreen(

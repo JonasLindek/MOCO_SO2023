@@ -2,14 +2,14 @@ package com.datojo.socialpet
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.content.Context
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.Image
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.viewModelScope
@@ -55,7 +55,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         startAdvertising()
-        startDiscovery()
+        startDiscovering(endpointDiscoveryCallback)
         createNotificationChannel()
         cancelAlarm(applicationContext, AlarmItem(1, "", Date()))
         cancelAlarm(applicationContext, AlarmItem(2, "", Date()))
@@ -66,7 +66,7 @@ class MainActivity : ComponentActivity() {
             //set stats from storage
             stats.setStats(cat.readFromInternalStorage("petStats", applicationContext))
             inventory.setItems(items.readFromInternalStorage("inventory", applicationContext))
-            Navigation(stats, inventory, contacts)
+            Navigation(stats, inventory, contacts, nearbyDevices)
         }
 
         //calc stat change after time away and update livedata in background
@@ -124,14 +124,6 @@ class MainActivity : ComponentActivity() {
             override fun onDisconnected(endpointId: String) {
             }
         }
-    private fun startDiscovery() {
-        val discoveryOptions = DiscoveryOptions.Builder().setStrategy(Strategy.P2P_STAR).build()
-        Nearby.getConnectionsClient(applicationContext)
-            .startDiscovery(
-                "socialpet", endpointDiscoveryCallback, discoveryOptions)
-            .addOnSuccessListener { }
-            .addOnFailureListener { }
-    }
 
     private val endpointDiscoveryCallback: EndpointDiscoveryCallback =
         object : EndpointDiscoveryCallback() {
@@ -144,7 +136,7 @@ class MainActivity : ComponentActivity() {
             override fun onEndpointLost(endpointId: String) {
             }
         }
-
+    private val nearbyDevices = listOf(endpointDiscoveryCallback)
 
     override fun onPause() {
         super.onPause()
@@ -152,6 +144,28 @@ class MainActivity : ComponentActivity() {
         stats.saveStats(cat).saveToInternalStorage("petStats", applicationContext)
         inventory.saveItems(items).saveToInternalStorage("inventory", applicationContext)
     }
+
+
+    private fun startDiscovering(endpointDiscoveryCallback: EndpointDiscoveryCallback) {
+        val discoveryOptions = DiscoveryOptions.Builder().setStrategy(Strategy.P2P_STAR).build()
+        Nearby.getConnectionsClient(applicationContext).startDiscovery(
+            "socialpet", endpointDiscoveryCallback, discoveryOptions
+        )
+            .addOnSuccessListener {
+                Log.e(
+                    "Discovery Start",
+                    "Discovery started successfully"
+                )
+            }.addOnFailureListener { e: Exception ->
+                e.localizedMessage?.let {
+                    Log.e(
+                        "Discovery Start",
+                        it
+                    )
+                }
+            }
+    }
+
 }
 
 @Composable

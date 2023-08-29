@@ -24,9 +24,14 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.google.android.gms.nearby.connection.EndpointDiscoveryCallback
 
 @Composable
-fun ListOverlay(contacts: List<String>, onClick: () -> Unit, addContact: () -> Unit) {
+fun ListOverlay(
+    contacts: List<String>,
+    nearbyDevices: List<EndpointDiscoveryCallback>,
+    onClick: () -> Unit
+) {
     ContactBar(onClick)
     Column(
         modifier = Modifier
@@ -44,7 +49,7 @@ fun ListOverlay(contacts: List<String>, onClick: () -> Unit, addContact: () -> U
         horizontalAlignment = Alignment.End,
         verticalArrangement = Arrangement.Bottom
     ) {
-        AddButton(addContact)
+        NearbyOverlay(nearbyDevices)
     }
 }
 
