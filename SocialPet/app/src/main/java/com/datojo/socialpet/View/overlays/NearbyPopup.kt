@@ -24,11 +24,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
-import com.google.android.gms.nearby.connection.EndpointDiscoveryCallback
 
 
 @Composable
-fun NearbyPopup(onDismiss: (Boolean) -> Unit, nearbyDevices: List<EndpointDiscoveryCallback>) {
+fun NearbyPopup(onDismiss: (Boolean) -> Unit, nearbyDevices: MutableList<String>) {
     Popup(
         alignment = Alignment.Center,
         onDismissRequest = { onDismiss(false) },
@@ -58,7 +57,7 @@ fun NearbyPopup(onDismiss: (Boolean) -> Unit, nearbyDevices: List<EndpointDiscov
     }
 }
 @Composable
-fun NearbyList(nearbyDevices: List<EndpointDiscoveryCallback>) {
+fun NearbyList(nearbyDevices: MutableList<String>) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -70,7 +69,7 @@ fun NearbyList(nearbyDevices: List<EndpointDiscoveryCallback>) {
     }
 }
 @Composable
-fun NearbyDevice(devices: EndpointDiscoveryCallback) {
+fun NearbyDevice(devices: String) {
     Row(
         modifier = Modifier
             .drawBehind {
@@ -89,6 +88,7 @@ fun NearbyDevice(devices: EndpointDiscoveryCallback) {
                 .fillMaxSize()
                 .padding(12.dp)
         ) {
+            Text(text = devices)
         }
     }
 }

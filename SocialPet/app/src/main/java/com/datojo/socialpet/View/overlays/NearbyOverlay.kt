@@ -13,11 +13,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.google.android.gms.nearby.connection.EndpointDiscoveryCallback
 
 
 @Composable
-fun NearbyOverlay(nearbyDevices: List<EndpointDiscoveryCallback>) {
+fun NearbyOverlay(nearbyDevices: MutableList<String>) {
 
     var nearbyPopupControl by remember { mutableStateOf(false) }
 

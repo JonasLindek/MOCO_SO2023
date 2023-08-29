@@ -2,6 +2,7 @@ package com.datojo.socialpet
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -79,7 +80,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun createNotificationChannel() {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 "STAT_CHANNEL",
                 "Status Report",
@@ -87,7 +88,8 @@ class MainActivity : ComponentActivity() {
             )
             channel.description = "Used For the Status Reminder notifications"
 
-            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val notificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
     }
@@ -111,6 +113,7 @@ class MainActivity : ComponentActivity() {
     val connectionLifecycleCallback: ConnectionLifecycleCallback =
         object : ConnectionLifecycleCallback() {
             override fun onConnectionInitiated(endpointId: String, connectionInfo: ConnectionInfo) {
+                nearbyDevices.add(endpointId)
                 Nearby.getConnectionsClient(applicationContext).acceptConnection(endpointId,payloadCallback)
             }
             override fun onConnectionResult(endpointId: String, result: ConnectionResolution) {
@@ -124,10 +127,12 @@ class MainActivity : ComponentActivity() {
             override fun onDisconnected(endpointId: String) {
             }
         }
+    private val nearbyDevices: MutableList<String> = mutableListOf()
 
     private val endpointDiscoveryCallback: EndpointDiscoveryCallback =
         object : EndpointDiscoveryCallback() {
             override fun onEndpointFound(endpointId: String, info: DiscoveredEndpointInfo) {
+                nearbyDevices.add(endpointId)
                 Nearby.getConnectionsClient(applicationContext)
                     .requestConnection("socialpet", endpointId, connectionLifecycleCallback)
                     .addOnSuccessListener { }
@@ -136,7 +141,7 @@ class MainActivity : ComponentActivity() {
             override fun onEndpointLost(endpointId: String) {
             }
         }
-    private val nearbyDevices = listOf(endpointDiscoveryCallback)
+
 
     override fun onPause() {
         super.onPause()
@@ -144,7 +149,6 @@ class MainActivity : ComponentActivity() {
         stats.saveStats(cat).saveToInternalStorage("petStats", applicationContext)
         inventory.saveItems(items).saveToInternalStorage("inventory", applicationContext)
     }
-
 
     private fun startDiscovering(endpointDiscoveryCallback: EndpointDiscoveryCallback) {
         val discoveryOptions = DiscoveryOptions.Builder().setStrategy(Strategy.P2P_STAR).build()
@@ -165,7 +169,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
     }
-
 }
 
 @Composable
