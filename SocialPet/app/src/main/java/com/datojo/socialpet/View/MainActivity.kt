@@ -21,6 +21,19 @@ import com.datojo.socialpet.View.cancelAlarm
 import com.datojo.socialpet.View.predict
 import com.datojo.socialpet.ViewModel.Inventory
 import com.datojo.socialpet.ViewModel.PetStatus
+import com.google.android.gms.nearby.Nearby
+import com.google.android.gms.nearby.connection.AdvertisingOptions
+import com.google.android.gms.nearby.connection.ConnectionInfo
+import com.google.android.gms.nearby.connection.ConnectionLifecycleCallback
+import com.google.android.gms.nearby.connection.ConnectionResolution
+import com.google.android.gms.nearby.connection.ConnectionsStatusCodes
+import com.google.android.gms.nearby.connection.DiscoveredEndpointInfo
+import com.google.android.gms.nearby.connection.DiscoveryOptions
+import com.google.android.gms.nearby.connection.EndpointDiscoveryCallback
+import com.google.android.gms.nearby.connection.Payload
+import com.google.android.gms.nearby.connection.PayloadCallback
+import com.google.android.gms.nearby.connection.PayloadTransferUpdate
+import com.google.android.gms.nearby.connection.Strategy
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.Date
@@ -41,6 +54,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        startAdvertising()
+        startDiscovery()
         createNotificationChannel()
         cancelAlarm(applicationContext, AlarmItem(1, "", Date()))
         cancelAlarm(applicationContext, AlarmItem(2, "", Date()))
@@ -76,6 +91,60 @@ class MainActivity : ComponentActivity() {
             notificationManager.createNotificationChannel(channel)
         }
     }
+
+    private fun startAdvertising() {
+        val advertisingOptions = AdvertisingOptions.Builder().setStrategy(Strategy.P2P_STAR).build()
+        Nearby.getConnectionsClient(applicationContext)
+            .startAdvertising(
+                "socialpet", "com.datojo.socialpet.View", connectionLifecycleCallback, advertisingOptions)
+            .addOnSuccessListener { }
+            .addOnFailureListener { }
+    }
+
+    val payloadCallback: PayloadCallback = object : PayloadCallback() {
+        override fun onPayloadReceived(p0: String, p1: Payload) {
+        }
+        override fun onPayloadTransferUpdate(p0: String, p1: PayloadTransferUpdate) {
+        }
+    }
+
+    val connectionLifecycleCallback: ConnectionLifecycleCallback =
+        object : ConnectionLifecycleCallback() {
+            override fun onConnectionInitiated(endpointId: String, connectionInfo: ConnectionInfo) {
+                Nearby.getConnectionsClient(applicationContext).acceptConnection(endpointId,payloadCallback)
+            }
+            override fun onConnectionResult(endpointId: String, result: ConnectionResolution) {
+                when (result.status.statusCode) {
+                    ConnectionsStatusCodes.STATUS_OK -> {}
+                    ConnectionsStatusCodes.STATUS_CONNECTION_REJECTED -> {}
+                    ConnectionsStatusCodes.STATUS_ERROR -> {}
+                    else -> {}
+                }
+            }
+            override fun onDisconnected(endpointId: String) {
+            }
+        }
+    private fun startDiscovery() {
+        val discoveryOptions = DiscoveryOptions.Builder().setStrategy(Strategy.P2P_STAR).build()
+        Nearby.getConnectionsClient(applicationContext)
+            .startDiscovery(
+                "socialpet", endpointDiscoveryCallback, discoveryOptions)
+            .addOnSuccessListener { }
+            .addOnFailureListener { }
+    }
+
+    private val endpointDiscoveryCallback: EndpointDiscoveryCallback =
+        object : EndpointDiscoveryCallback() {
+            override fun onEndpointFound(endpointId: String, info: DiscoveredEndpointInfo) {
+                Nearby.getConnectionsClient(applicationContext)
+                    .requestConnection("socialpet", endpointId, connectionLifecycleCallback)
+                    .addOnSuccessListener { }
+                    .addOnFailureListener { }
+            }
+            override fun onEndpointLost(endpointId: String) {
+            }
+        }
+
 
     override fun onPause() {
         super.onPause()
