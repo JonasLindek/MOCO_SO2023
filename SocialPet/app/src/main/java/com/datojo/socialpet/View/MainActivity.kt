@@ -56,7 +56,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         startAdvertising()
-        startDiscovering(endpointDiscoveryCallback)
+        startDiscovering()
         createNotificationChannel()
         cancelAlarm(applicationContext, AlarmItem(1, "", Date()))
         cancelAlarm(applicationContext, AlarmItem(2, "", Date()))
@@ -99,8 +99,19 @@ class MainActivity : ComponentActivity() {
         Nearby.getConnectionsClient(applicationContext)
             .startAdvertising(
                 "socialpet", "com.datojo.socialpet.View", connectionLifecycleCallback, advertisingOptions)
-            .addOnSuccessListener { }
-            .addOnFailureListener { }
+            .addOnSuccessListener {
+            Log.e(
+                "Advertising Start",
+                "Advertising started successfully"
+            )
+            }.addOnFailureListener { e: Exception ->
+            e.localizedMessage?.let {
+                Log.e(
+                    "Advertising Start",
+                    it
+                )
+            }
+        }
     }
 
     val payloadCallback: PayloadCallback = object : PayloadCallback() {
@@ -135,8 +146,19 @@ class MainActivity : ComponentActivity() {
                 nearbyDevices.add(endpointId)
                 Nearby.getConnectionsClient(applicationContext)
                     .requestConnection("socialpet", endpointId, connectionLifecycleCallback)
-                    .addOnSuccessListener { }
-                    .addOnFailureListener { }
+                    .addOnSuccessListener {
+                        Log.e(
+                            "Discovery Start",
+                            "Discovery started successfully"
+                        )
+                    }.addOnFailureListener { e: Exception ->
+                        e.localizedMessage?.let {
+                            Log.e(
+                                "Discovery Start",
+                                it
+                            )
+                        }
+                    }
             }
             override fun onEndpointLost(endpointId: String) {
             }
@@ -150,10 +172,10 @@ class MainActivity : ComponentActivity() {
         inventory.saveItems(items).saveToInternalStorage("inventory", applicationContext)
     }
 
-    private fun startDiscovering(endpointDiscoveryCallback: EndpointDiscoveryCallback) {
+    private fun startDiscovering() {
         val discoveryOptions = DiscoveryOptions.Builder().setStrategy(Strategy.P2P_STAR).build()
         Nearby.getConnectionsClient(applicationContext).startDiscovery(
-            "socialpet", endpointDiscoveryCallback, discoveryOptions
+            "com.datojo.socialpet.View", endpointDiscoveryCallback, discoveryOptions
         )
             .addOnSuccessListener {
                 Log.e(
